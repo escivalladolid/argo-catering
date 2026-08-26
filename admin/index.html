@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <script>
-  window.API_BASE = typeof VITE_API_BASE !== 'undefined' 
-    ? VITE_API_BASE 
-    : 'http://127.0.0.1:8001';
+  if (typeof VITE_API_BASE === 'undefined') {
+      console.error('VITE_API_BASE is not set. Set VITE_API_BASE environment variable in Vercel.');
+    }
+  window.API_BASE = VITE_API_BASE;
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -334,8 +335,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 <script>
 /* ============ API LAYER ============ */
-// Use VITE_API_BASE from Vercel env, fallback to localhost
-const API_BASE = typeof VITE_API_BASE !== 'undefined' ? VITE_API_BASE : 'http://127.0.0.1:8001';
+// Use VITE_API_BASE from Vercel env (required)
+if (typeof VITE_API_BASE === 'undefined') {
+  console.error('VITE_API_BASE is not set. Set VITE_API_BASE environment variable in Vercel.');
+}
+const API_BASE = VITE_API_BASE;
 
 let authToken = localStorage.getItem('catering_token') || null;
 let currentUser = null;

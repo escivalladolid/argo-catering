@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <script>
-  window.API_BASE = typeof VITE_API_BASE !== 'undefined' 
-    ? VITE_API_BASE 
-    : 'http://127.0.0.1:8001';
+  if (typeof VITE_API_BASE === 'undefined') {
+      console.error('VITE_API_BASE is not set. Set VITE_API_BASE environment variable in Vercel.');
+    }
+  window.API_BASE = VITE_API_BASE;
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -832,7 +833,7 @@
 <div class="toast" id="toast"><i class="bi bi-check-circle"></i><span id="toast-msg"></span></div>
 
 <script>
-var API_BASE = 'http://127.0.0.1:8001';
+// API_BASE is set via window.API_BASE at top of file
 
 function apiRequest(path, options) {
   options = options || {};

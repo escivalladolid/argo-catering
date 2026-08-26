@@ -36,15 +36,19 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# CORS - configurable via environment variable
+settings = get_settings()
+cors_origins = [origin.strip() for origin in settings.CORS_ALLOWED_ORIGINS.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-_email_svc_mod.email_service = EmailService(get_settings())
+_email_svc_mod.email_service = EmailService(settings)
 
 app.include_router(auth_router.router)
 app.include_router(packages.router)
@@ -72,21 +76,25 @@ app.include_router(dashboard.router)
 def root():
     return {"message": "Catering Management System API"}
 
+
 @app.get("/app", response_class=HTMLResponse)
 def serve_app():
     html_path = Path(__file__).parent.parent / "catering-mockup.html"
     return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
+
 
 @app.get("/customer", response_class=HTMLResponse)
 def serve_customer_portal():
     html_path = Path(__file__).parent.parent / "customer-portal.html"
     return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
 
+
 @app.get("/customer-portal.html", response_class=HTMLResponse)
 def serve_customer_portal_file_alias():
     """Alias matching the exact path used in emailed tracking links
     (PUBLIC_BASE_URL + /customer-portal.html?ref=...&token=...)."""
     return serve_customer_portal()
+
 
 # Mount uploads directory for serving payment proofs and other files
 uploads_dir = Path(__file__).parent.parent / "uploads"
