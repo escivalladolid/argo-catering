@@ -334,7 +334,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 <script>
 /* ============ API LAYER ============ */
-const API_BASE = 'http://127.0.0.1:8001';
+// Use VITE_API_BASE from Vercel env, fallback to localhost
+const API_BASE = typeof VITE_API_BASE !== 'undefined' ? VITE_API_BASE : 'http://127.0.0.1:8001';
 
 let authToken = localStorage.getItem('catering_token') || null;
 let currentUser = null;
