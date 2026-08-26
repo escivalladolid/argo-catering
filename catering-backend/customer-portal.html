@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARGO Catering — Customer Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+  :root{
+    --slate-900:#0f172a; --slate-800:#1e293b; --slate-700:#334155; --slate-600:#475569;
+    --slate-500:#64748b; --slate-400:#94a3b8; --slate-300:#cbd5e1; --slate-200:#e2e8f0;
+    --slate-100:#f1f5f9; --slate-50:#f8fafc;
+    --blue-600:#2563eb; --blue-700:#1d4ed8; --blue-100:#dbeafe; --blue-50:#eff6ff;
+    --green-600:#16a34a; --green-100:#dcfce7;
+    --amber-600:#d97706; --amber-100:#fef3c7;
+    --red-600:#dc2626; --red-100:#fee2e2;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(15,23,42,.05);
+    --shadow-md:0 4px 12px rgba(15,23,42,.08);
+    --shadow-lg:0 16px 40px rgba(15,23,42,.16);
+  }
+  *{box-sizing:border-box;}
+  html{overflow-x:hidden;}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--slate-50);color:var(--slate-900);-webkit-font-smoothing:antialiased;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+
+  .topnav{
+    background:#fff;border-bottom:1px solid var(--slate-200);position:sticky;top:0;z-index:50;
+  }
+  .topnav-inner{max-width:960px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .mark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--blue-600),#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0;}
+  .brand .name{font-weight:800;font-size:15px;line-height:1.2;}
+  .brand .tag{font-size:11px;color:var(--slate-500);font-weight:500;}
+  .nav-links{display:flex;gap:6px;background:var(--slate-100);padding:4px;border-radius:9px;}
+  .nav-links button{border:none;background:transparent;padding:8px 14px;border-radius:6px;font-size:12.5px;font-weight:600;color:var(--slate-500);}
+  .nav-links button.active{background:#fff;color:var(--slate-900);box-shadow:var(--shadow-sm);}
+
+  .wrap{max-width:820px;margin:0 auto;padding:28px 20px 80px;}
+  .view{display:none;}
+  .view.active{display:block;animation:fadeIn .2s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .hero{text-align:center;margin-bottom:26px;}
+  .hero h1{font-size:22px;font-weight:800;margin:0 0 6px;}
+  .hero p{font-size:13.5px;color:var(--slate-500);margin:0;max-width:520px;margin:0 auto;}
+
+  /* Home — gradient welcome */
+  #view-home{
+    background:linear-gradient(180deg,#0c1e3a 0%,#132e52 25%,#1a3f6e 50%,#3a6fa0 72%,#8fb8db 88%,#c4ddf0 100%);
+    color:#fff;padding:60px 24px 50px;margin:0;position:relative;overflow:hidden;
+  }
+  #view-home::before{content:'';position:absolute;top:-60px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;}
+  #view-home::after{content:'';position:absolute;bottom:-40px;left:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.03);pointer-events:none;}
+  #view-home .home-inner{text-align:center;max-width:420px;width:100%;margin:0 auto;position:relative;z-index:1;}
+  #view-home .home-logo{width:54px;height:54px;border-radius:14px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:800;font-size:15px;color:#fff;}
+  #view-home .home-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;}
+  #view-home .home-title{font-size:19px;font-weight:800;color:#fff;margin:0 0 5px;line-height:1.3;}
+  #view-home .home-sub{font-size:12.5px;color:rgba(255,255,255,.5);margin:0 0 28px;line-height:1.6;}
+  #view-home .home-card{
+    background:rgba(255,255,255,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.5);border-radius:var(--radius);
+    box-shadow:0 8px 32px rgba(0,0,0,.1);padding:20px;color:var(--slate-900);text-align:left;
+  }
+  #view-home .home-card .hc-row{display:flex;align-items:center;gap:12px;padding:10px 0;}
+  #view-home .home-card .hc-row:not(:last-child){border-bottom:1px solid var(--slate-100);}
+  #view-home .home-card .hc-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+  #view-home .home-card .hc-label{font-size:12.5px;font-weight:700;color:var(--slate-900);}
+  #view-home .home-card .hc-desc{font-size:11px;color:var(--slate-500);margin-top:1px;}
+  #view-home .home-actions{display:flex;gap:10px;margin-top:22px;justify-content:center;}
+  #view-home .home-foot{margin-top:20px;font-size:10.5px;color:var(--slate-900);}
+
+  .card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow-sm);margin-bottom:18px;}
+  .card-pad{padding:22px 24px;}
+  .card-title{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .card-title .num{width:26px;height:26px;border-radius:50%;background:var(--blue-100);color:var(--blue-700);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+  .card-title h2{font-size:15.5px;font-weight:700;margin:0;}
+  .card-title .opt{margin-left:auto;font-size:11px;color:var(--slate-400);font-weight:600;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-group.full{grid-column:1/-1;}
+  .form-group label{font-size:12.5px;font-weight:600;color:var(--slate-700);}
+  .form-group .req{color:var(--red-600);}
+  .form-group .hint{font-size:11px;color:var(--slate-400);font-weight:400;}
+  .form-control{border:1px solid var(--slate-300);border-radius:8px;padding:10px 12px;font-size:13.5px;color:var(--slate-900);width:100%;background:#fff;}
+  .form-control:focus{outline:2px solid var(--blue-100);border-color:var(--blue-600);}
+  textarea.form-control{resize:vertical;min-height:70px;}
+  .error-text{font-size:11px;color:var(--red-600);display:none;}
+  .form-group.has-error .form-control{border-color:var(--red-600);}
+  .form-group.has-error .error-text{display:block;}
+
+  .btn{border-radius:8px;font-size:13px;font-weight:600;padding:10px 17px;border:1px solid transparent;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;}
+  .btn-primary{background:var(--blue-600);color:#fff;}
+  .btn-primary:hover{background:var(--blue-700);}
+  .btn-primary:disabled{background:var(--slate-300);cursor:not-allowed;}
+  .btn-outline{background:#fff;border-color:var(--slate-300);color:var(--slate-700);}
+  .btn-outline:hover{background:var(--slate-50);}
+  .btn-danger{background:var(--red-600);color:#fff;}
+  .btn-danger-outline{background:#fff;border-color:var(--red-100);color:var(--red-600);}
+  .btn-danger-outline:hover{background:var(--red-100);}
+  .btn-sm{padding:7px 12px;font-size:12px;}
+  .btn-block{width:100%;justify-content:center;}
+
+  .type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .type-opt{border:2px solid var(--slate-200);border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:#fff;}
+  .type-opt.active{border-color:var(--blue-600);background:var(--blue-50);}
+  .type-opt i{font-size:20px;color:var(--blue-600);margin-bottom:6px;display:block;}
+  .type-opt .t{font-size:13px;font-weight:700;}
+  .type-opt .s{font-size:11px;color:var(--slate-500);margin-top:2px;}
+
+  .pkg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  .pkg-card{border:2px solid var(--slate-200);border-radius:var(--radius);padding:18px;background:#fff;display:flex;flex-direction:column;gap:10px;cursor:pointer;position:relative;}
+  .pkg-card.selected{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-100);}
+  .pkg-card .sel-check{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--blue-600);color:#fff;display:none;align-items:center;justify-content:center;font-size:11px;}
+  .pkg-card.selected .sel-check{display:flex;}
+  .pkg-card h3{font-size:14px;font-weight:700;margin:0;}
+  .pkg-card .price{font-size:18px;font-weight:800;color:var(--slate-900);}
+  .pkg-card .price small{font-size:11px;font-weight:500;color:var(--slate-500);}
+  .pkg-card .preview{font-size:11.5px;color:var(--slate-500);line-height:1.6;}
+  .pkg-card .foot{margin-top:auto;display:flex;flex-direction:column;gap:7px;}
+
+  .guest-adjust-box{background:var(--blue-50);border:1px solid var(--blue-100);border-radius:10px;padding:16px 18px;margin-top:16px;}
+  .guest-adjust-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .qty-control{display:flex;align-items:center;gap:10px;}
+  .qty-control button{width:32px;height:32px;border-radius:8px;border:1px solid var(--slate-300);background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--slate-700);}
+  .qty-control input{width:64px;text-align:center;border:1px solid var(--slate-300);border-radius:8px;padding:6px;font-size:14px;font-weight:700;}
+  .guest-total{text-align:right;}
+  .guest-total .lbl{font-size:11px;color:var(--slate-500);font-weight:600;}
+  .guest-total .amt{font-size:20px;font-weight:800;color:var(--blue-700);}
+  .quantity-breakdown{margin-top:12px;padding-top:12px;border-top:1px solid var(--blue-100);display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11.5px;color:var(--slate-600);}
+
+  .custom-group{margin-bottom:16px;}
+  .custom-group .cg-title{font-size:12.5px;font-weight:700;color:var(--slate-700);margin-bottom:8px;text-transform:uppercase;letter-spacing:.02em;}
+  .check-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--slate-200);border-radius:8px;margin-bottom:6px;}
+  .check-row label{font-size:13px;font-weight:500;flex:1;cursor:pointer;}
+  .check-row .price-tag{font-size:12px;font-weight:700;color:var(--slate-600);}
+
+  .callout{display:flex;gap:9px;padding:12px 14px;border-radius:9px;font-size:11.5px;line-height:1.5;}
+  .callout.info{background:var(--blue-50);color:#1e40af;}
+  .callout.warn{background:var(--amber-100);color:#92400e;}
+  .callout i{margin-top:1px;flex-shrink:0;}
+
+  .radio-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .radio-opt{border:2px solid var(--slate-200);border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;background:#fff;}
+  .radio-opt.active{border-color:var(--blue-600);background:var(--blue-50);}
+  .radio-opt input{width:16px;height:16px;}
+  .radio-opt .t{font-size:13px;font-weight:600;}
+
+  .venue-card{border:1px solid var(--slate-200);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;transition:border-color .15s,background .15s;}
+  .venue-card.disabled{opacity:.5;}
+  .venue-card.selected{border-color:var(--blue-600);background:var(--blue-50);}
+  .venue-card .vi{font-size:13px;font-weight:700;}
+  .venue-card .vs{font-size:11.5px;color:var(--slate-500);margin-top:2px;}
+  .venue-card .vr{margin-left:auto;text-align:right;flex-shrink:0;}
+
+  .summary-card{background:linear-gradient(135deg,var(--slate-900),var(--slate-800));border-radius:var(--radius);padding:20px 24px;color:#fff;}
+  .summary-line{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;color:var(--slate-300);}
+  .summary-line.total{border-top:1px solid rgba(255,255,255,.15);margin-top:8px;padding-top:12px;font-size:16px;font-weight:800;color:#fff;}
+  .summary-note{font-size:11px;color:var(--slate-400);margin-top:10px;line-height:1.5;}
+
+  .policy-box{background:var(--slate-50);border:1px solid var(--slate-200);border-radius:10px;padding:16px 18px;}
+  .policy-check{display:flex;gap:10px;align-items:flex-start;}
+  .policy-check input{width:18px;height:18px;margin-top:2px;flex-shrink:0;}
+  .policy-check label{font-size:12.5px;line-height:1.6;color:var(--slate-700);}
+  .policy-links{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+  .policy-links a{font-size:12px;font-weight:600;color:var(--blue-600);}
+  .policy-links a:hover{text-decoration:underline;}
+
+  .confirm-wrap{text-align:center;padding:40px 20px;}
+  .confirm-icon{width:70px;height:70px;border-radius:50%;background:var(--green-100);color:var(--green-600);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 18px;}
+  .confirm-wrap h2{font-size:19px;font-weight:800;margin:0 0 6px;}
+  .confirm-wrap p{font-size:13.5px;color:var(--slate-500);margin:4px 0;}
+  .ref-box{display:inline-block;background:var(--slate-100);border-radius:8px;padding:12px 22px;margin:16px 0;font-size:16px;font-weight:800;letter-spacing:.03em;color:var(--slate-900);}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+  .pill::before{content:'';width:6px;height:6px;border-radius:50%;}
+  .pill.pending{background:var(--amber-100);color:#92400e;} .pill.pending::before{background:var(--amber-600);}
+  .pill.progress{background:var(--blue-100);color:#1e40af;} .pill.progress::before{background:var(--blue-600);}
+  .pill.confirmed{background:var(--green-100);color:#166534;} .pill.confirmed::before{background:var(--green-600);}
+  .pill.cancelled{background:var(--red-100);color:#991b1b;} .pill.cancelled::before{background:var(--red-600);}
+
+  .status-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+  .status-header .ref{font-size:11px;color:var(--slate-500);font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+  .status-header h2{font-size:19px;font-weight:800;margin:4px 0 8px;}
+  .status-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--slate-500);}
+  .status-meta span{display:flex;align-items:center;gap:5px;}
+
+  .lifecycle{display:flex;overflow-x:auto;gap:0;padding-bottom:6px;margin-bottom:6px;}
+  .lc-step{flex:1;min-width:88px;text-align:center;position:relative;}
+  .lc-step::before{content:'';position:absolute;top:14px;left:-50%;width:100%;height:2px;background:var(--slate-200);z-index:0;}
+  .lc-step:first-child::before{display:none;}
+  .lc-step.done::before{background:var(--green-600);}
+  .lc-dot{width:28px;height:28px;border-radius:50%;background:var(--slate-100);color:var(--slate-400);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 6px;position:relative;z-index:1;border:3px solid #fff;}
+  .lc-step.done .lc-dot{background:var(--green-600);color:#fff;}
+  .lc-step.current .lc-dot{background:var(--blue-600);color:#fff;}
+  .lc-label{font-size:9.5px;font-weight:600;color:var(--slate-500);line-height:1.3;}
+  .lc-step.done .lc-label,.lc-step.current .lc-label{color:var(--slate-900);}
+
+  .quote-line{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;color:var(--slate-600);}
+  .quote-line.total{border-top:1px solid var(--slate-200);margin-top:6px;padding-top:12px;font-size:15px;font-weight:800;color:var(--slate-900);}
+
+  .locked-box{text-align:center;padding:30px 20px;}
+  .locked-box i{font-size:30px;color:var(--slate-400);}
+  .locked-box h3{font-size:14px;font-weight:700;margin:10px 0 4px;}
+  .locked-box p{font-size:12.5px;color:var(--slate-500);margin:0 0 16px;}
+  .otp-inputs{display:flex;gap:8px;justify-content:center;margin:14px 0;}
+  .otp-inputs input{width:42px;height:48px;text-align:center;font-size:18px;font-weight:800;border:1px solid var(--slate-300);border-radius:8px;}
+
+  .pay-method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+  .pay-method{border:2px solid var(--slate-200);border-radius:9px;padding:12px 8px;text-align:center;cursor:pointer;background:#fff;}
+  .pay-method.active{border-color:var(--blue-600);background:var(--blue-50);}
+  .pay-method i{font-size:18px;color:var(--blue-600);margin-bottom:4px;display:block;}
+  .pay-method span{font-size:11px;font-weight:700;}
+  .pay-instructions{background:var(--slate-50);border:1px dashed var(--slate-300);border-radius:9px;padding:14px 16px;font-size:12.5px;color:var(--slate-700);margin-bottom:14px;}
+  .pay-instructions .li{display:flex;justify-content:space-between;padding:4px 0;}
+  .pay-instructions .demo-tag{display:inline-block;background:var(--amber-100);color:#92400e;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-bottom:8px;}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:10.5px;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.03em;padding:9px 12px;border-bottom:1px solid var(--slate-200);background:var(--slate-50);}
+  tbody td{padding:11px 12px;font-size:12.5px;border-bottom:1px solid var(--slate-100);color:var(--slate-700);}
+  tbody tr:last-child td{border-bottom:none;}
+
+  .status-banner{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:10px;margin-bottom:16px;}
+  .status-banner.pending{background:var(--amber-100);}
+  .status-banner.verified{background:var(--green-100);}
+  .status-banner.confirmed{background:var(--blue-50);}
+  .status-banner .sb-icon{font-size:20px;}
+  .status-banner .sb-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+  .status-banner .sb-text{font-size:12px;color:var(--slate-600);}
+  .next-list{list-style:none;margin:8px 0 0;padding:0;font-size:12px;color:var(--slate-600);}
+  .next-list li{padding:3px 0;display:flex;gap:7px;align-items:center;}
+  .next-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--slate-400);}
+
+  .help-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .help-item{display:flex;align-items:center;gap:10px;font-size:12.5px;}
+  .help-item i{width:32px;height:32px;border-radius:8px;background:var(--blue-100);color:var(--blue-700);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.active{display:flex;}
+  .modal{background:#fff;border-radius:14px;width:100%;max-width:640px;box-shadow:var(--shadow-lg);max-height:88vh;overflow-y:auto;}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--slate-200);position:sticky;top:0;background:#fff;}
+  .modal-head h3{font-size:15px;font-weight:700;margin:0;}
+  .modal-close{width:30px;height:30px;border-radius:8px;border:none;background:var(--slate-100);display:flex;align-items:center;justify-content:center;color:var(--slate-500);}
+  .modal-body{padding:22px;}
+  .modal-foot{padding:16px 22px;border-top:1px solid var(--slate-200);display:flex;justify-content:flex-end;gap:8px;}
+  .pkg-detail-section{margin-bottom:16px;}
+  .pkg-detail-section .pt{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--slate-500);margin-bottom:7px;}
+  .pkg-detail-list{list-style:none;margin:0;padding:0;font-size:13px;color:var(--slate-700);}
+  .pkg-detail-list li{padding:4px 0;display:flex;gap:8px;align-items:center;}
+  .pkg-detail-list li i{color:var(--green-600);font-size:12px;}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--slate-900);color:#fff;padding:12px 20px;border-radius:9px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);z-index:200;opacity:0;pointer-events:none;transition:all .25s ease;display:flex;align-items:center;gap:8px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.error{background:var(--red-600);}
+  .toast.success{background:var(--green-600);}
+
+  @media (max-width:720px){
+    .form-grid,.pkg-grid,.type-toggle,.radio-toggle,.pay-method-grid{grid-template-columns:1fr;}
+    .quantity-breakdown{grid-template-columns:1fr;}
+    .wrap{padding:20px 14px 60px;}
+    .topnav-inner{flex-direction:column;align-items:stretch;}
+    .brand{justify-content:center;margin-bottom:4px;}
+    .nav-links{justify-content:center;flex-wrap:wrap;}
+    .nav-links button{padding:7px 12px;font-size:12px;}
+    #view-home{padding:40px 16px 36px;}
+    #view-home .home-title{font-size:17px;}
+    #view-home .home-actions{flex-direction:column;}
+    #view-home .home-actions .btn{width:100%;justify-content:center;}
+    .status-header{flex-direction:column;}
+    .status-meta{flex-direction:column;gap:6px;}
+    .lifecycle{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .lc-step{min-width:72px;}
+    .lc-label{font-size:8.5px;}
+    .help-row{flex-direction:column;gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-inner">
+    <div class="brand">
+      <div class="mark">ARGO</div>
+      <div><div class="name">ARGO Catering</div><div class="tag">Customer Portal</div></div>
+    </div>
+    <div class="nav-links">
+      <button class="active" data-nav="home" onclick="goNav('home')">Home</button>
+      <button data-nav="new-inquiry" onclick="goNav('new-inquiry')">New Inquiry</button>
+      <button data-nav="check-inquiry" onclick="goNav('check-inquiry')">Check Inquiry</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ============ HOME ============ -->
+<div class="view active" id="view-home">
+  <div class="home-inner">
+    <div class="home-logo">ARGO</div>
+    <div class="home-tag">Catering Services</div>
+    <div class="home-title">Event Catering Made Simple</div>
+    <div class="home-sub">Quality food, professional staff, and seamless events — from inquiry to celebration.</div>
+
+    <div class="home-card">
+      <div class="hc-row">
+        <div class="hc-icon" style="background:var(--blue-100);color:var(--blue-700);"><i class="bi bi-egg-fried"></i></div>
+        <div>
+          <div class="hc-label">Quality Catering</div>
+          <div class="hc-desc">Fresh ingredients, expert chefs, beautifully presented dishes</div>
+        </div>
+      </div>
+      <div class="hc-row">
+        <div class="hc-icon" style="background:var(--green-100);color:var(--green-600);"><i class="bi bi-people"></i></div>
+        <div>
+          <div class="hc-label">Full-Service Staffing</div>
+          <div class="hc-desc">Professional servers, bartenders, and event coordinators</div>
+        </div>
+      </div>
+      <div class="hc-row">
+        <div class="hc-icon" style="background:var(--amber-100);color:#92400e;"><i class="bi bi-calendar-check"></i></div>
+        <div>
+          <div class="hc-label">Easy Booking</div>
+          <div class="hc-desc">No account needed — submit an inquiry and track it online</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-actions">
+      <button class="btn btn-primary" onclick="goNav('new-inquiry')"><i class="bi bi-plus-circle"></i> Submit an Inquiry</button>
+      <button class="btn btn-outline" onclick="goNav('check-inquiry')"><i class="bi bi-search"></i> Check Inquiry</button>
+    </div>
+    <div class="home-foot">No account required — you'll receive a private link to track your booking.</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ NEW INQUIRY FORM ============ -->
+  <div class="view" id="view-new-inquiry">
+    <div class="hero">
+      <h1>Submit a Catering Inquiry</h1>
+      <p>No account needed. Tell us about your event and we'll send a private status link to your email — no password required.</p>
+    </div>
+
+    <!-- 1. Customer Info -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="num">1</div><h2>Your Information</h2></div>
+      <div class="form-grid">
+        <div class="form-group full" id="fg-name">
+          <label>Full Name <span class="req">*</span></label>
+          <input class="form-control" id="in-name" placeholder="e.g. Maria Reyes">
+          <span class="error-text">Please enter your full name.</span>
+        </div>
+        <div class="form-group" id="fg-email">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" class="form-control" id="in-email" placeholder="you@gmail.com">
+          <span class="error-text">A valid email is required — we'll send your private status link here.</span>
+        </div>
+        <div class="form-group" id="fg-contact">
+          <label>Contact Number <span class="req">*</span></label>
+          <input class="form-control" id="in-contact" placeholder="09XX XXX XXXX">
+          <span class="error-text">Please enter a contact number.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Event Details -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="num">2</div><h2>Event Details</h2></div>
+      <div class="form-grid">
+        <div class="form-group" id="fg-date">
+          <label>Event Date <span class="req">*</span></label>
+          <input type="date" class="form-control" id="in-date" onchange="if(venueMode==='need')renderVenueList()">
+          <span class="error-text">Please choose your event date.</span>
+        </div>
+        <div class="form-group" id="fg-time">
+          <label>Event Time <span class="req">*</span></label>
+          <input type="time" class="form-control" id="in-time">
+          <span class="error-text">Please choose your event time.</span>
+        </div>
+        <div class="form-group full">
+          <label>Additional Requirements <span class="hint">(optional)</span></label>
+          <textarea class="form-control" id="in-additional" placeholder="Anything else we should know?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Dietary Restrictions <span class="hint">(optional)</span></label>
+          <textarea class="form-control" id="in-dietary" placeholder="Allergies, vegetarian, halal, etc."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Setup Instructions <span class="hint">(optional)</span></label>
+          <textarea class="form-control" id="in-setup" placeholder="Layout, arrival access, etc."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Package Selection -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="num">3</div><h2>Choose Your Catering Package</h2></div>
+
+      <div class="type-toggle">
+        <div class="type-opt active" id="type-premade" onclick="setPkgType('premade')">
+          <i class="bi bi-box-seam"></i>
+          <div class="t">Pre-Made Package</div>
+          <div class="s">Choose from Basic, Standard, or Premium</div>
+        </div>
+        <div class="type-opt" id="type-custom" onclick="setPkgType('custom')">
+          <i class="bi bi-sliders"></i>
+          <div class="t">Make My Own Package</div>
+          <div class="s">Pick your own dishes, equipment & staff</div>
+        </div>
+      </div>
+
+      <!-- Pre-made -->
+      <div id="premade-section">
+        <div class="pkg-grid" id="pkg-grid"></div>
+
+        <div class="guest-adjust-box" id="guest-adjust-box" style="display:none;">
+          <div class="guest-adjust-row">
+            <div>
+              <div style="font-size:12.5px;font-weight:700;" id="ga-pkg-name">Standard Package</div>
+              <div style="font-size:11px;color:var(--slate-500);" id="ga-pkg-price">₱550 per guest</div>
+            </div>
+            <div class="qty-control">
+              <button type="button" onclick="adjustGuests(-5)">−</button>
+              <input type="number" id="ga-guests" value="50" oninput="recalcPremade()">
+              <button type="button" onclick="adjustGuests(5)">+</button>
+            </div>
+            <div class="guest-total">
+              <div class="lbl">Estimated Total</div>
+              <div class="amt" id="ga-total">₱27,500</div>
+            </div>
+          </div>
+          <div class="quantity-breakdown" id="ga-breakdown"></div>
+          <div class="callout info" style="margin-top:12px;">
+            <i class="bi bi-info-circle"></i>
+            <span>Package price is calculated based on the number of guests. Food, tableware, buffet equipment, and server quantities are automatically scaled to match.</span>
+          </div>
+
+          <div style="margin-top:18px;border-top:1px solid var(--blue-100);padding-top:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--slate-700);margin-bottom:2px;">Service Style</div>
+            <div style="font-size:11.5px;color:var(--slate-500);margin-bottom:8px;">Your package includes <strong id="pa-default-style-label">a default</strong> service style.</div>
+            <select class="form-control" id="premade-service-style" style="max-width:240px;" onchange="updateSummary()">
+              <option value="">Use package default</option>
+              <option value="buffet">Buffet</option>
+              <option value="plated">Plated</option>
+              <option value="cocktail">Cocktail</option>
+              <option value="banquet">Banquet</option>
+            </select>
+            <div class="callout warn" style="margin-top:10px;">
+              <i class="bi bi-exclamation-triangle"></i>
+              <span>Changing service style may affect final pricing — your quotation will reflect the adjusted staffing and setup.</span>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;border-top:1px solid var(--blue-100);padding-top:14px;" id="premade-addons-box" >
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--slate-700);margin-bottom:2px;">Optional Add-ons</div>
+                <div style="font-size:11.5px;color:var(--slate-500);" id="pa-summary-line">No add-ons selected yet.</div>
+              </div>
+              <button class="btn btn-outline" id="pa-open-btn" onclick="openPremadeAddons()">Add Extras</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom -->
+      <div id="custom-section" style="display:none;">
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Number of Guests <span class="req">*</span></label>
+          <input type="number" class="form-control" id="custom-guests" value="50" style="max-width:160px;" oninput="recalcCustom()">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Service Style <span class="req">*</span></label>
+          <select class="form-control" id="custom-service-style" style="max-width:240px;">
+            <option value="">-- Select service style --</option>
+            <option value="buffet">Buffet</option>
+            <option value="plated">Plated</option>
+            <option value="cocktail">Cocktail</option>
+            <option value="banquet">Banquet</option>
+          </select>
+        </div>
+
+        <div class="custom-group">
+          <div class="cg-title">Dishes</div>
+          <div id="custom-dishes"></div>
+        </div>
+        <div class="custom-group">
+          <div class="cg-title">Equipment</div>
+          <div id="custom-equipment"></div>
+        </div>
+        <div class="custom-group">
+          <div class="cg-title">Staff</div>
+          <div id="custom-staff"></div>
+        </div>
+
+        <div class="guest-adjust-box">
+          <div class="guest-adjust-row">
+            <div style="font-size:12.5px;font-weight:700;">Estimated Price</div>
+            <div class="guest-total"><div class="amt" id="custom-total">₱0</div></div>
+          </div>
+          <div class="callout warn" style="margin-top:12px;">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span>Final pricing may be adjusted after staff review.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Venue -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="num">4</div><h2>Venue / Location</h2></div>
+      <div class="radio-toggle">
+        <div class="radio-opt active" id="venue-own-opt" onclick="setVenueMode('own')">
+          <input type="radio" name="venue-mode" checked>
+          <div><div class="t">I already have a venue</div></div>
+        </div>
+        <div class="radio-opt" id="venue-need-opt" onclick="setVenueMode('need')">
+          <input type="radio" name="venue-mode">
+          <div><div class="t">I need a venue</div></div>
+        </div>
+      </div>
+
+      <div id="venue-own-section">
+        <div class="form-grid">
+          <div class="form-group"><label>Venue Name <span class="req">*</span></label><input class="form-control" id="in-venue-name" placeholder="e.g. Garden Pavilion"></div>
+          <div class="form-group"><label>Complete Address <span class="req">*</span></label><input class="form-control" id="in-venue-address" placeholder="Street, Barangay, City"></div>
+        </div>
+      </div>
+
+      <div id="venue-need-section" style="display:none;">
+        <div id="venue-list"></div>
+        <div class="callout warn" style="margin-top:6px;">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>Venue availability and pricing are subject to confirmation. Not every catering booking automatically includes a venue.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estimated total -->
+    <div class="summary-card">
+      <div class="summary-line"><span>Catering Package (<span id="sum-guests">50</span> guests)</span><span id="sum-package">₱27,500</span></div>
+      <div class="summary-line" id="sum-addons-row" style="display:none;"><span>Add-ons</span><span id="sum-addons">₱0</span></div>
+      <div class="summary-line" id="sum-venue-row" style="display:none;"><span>Venue Fee</span><span id="sum-venue">₱0</span></div>
+      <div class="summary-line total"><span>Estimated Total</span><span id="sum-total">₱27,500</span></div>
+      <div class="summary-note">Estimated pricing. Final quotation is subject to staff review and confirmation.</div>
+    </div>
+
+    <!-- 5. Policy agreement -->
+    <div class="card card-pad">
+      <div class="card-title"><h2>Before You Submit</h2></div>
+      <div class="policy-box">
+        <div class="policy-check">
+          <input type="checkbox" id="in-policy-agree" onchange="validatePolicyCheck()">
+          <label for="in-policy-agree">I have read and agree to the company's Booking Policy, Payment Policy, and Cancellation & Refund Policy. I understand that submitting an inquiry does not automatically confirm my catering booking.</label>
+        </div>
+        <div class="policy-links">
+          <a href="#" onclick="event.preventDefault();openModal('booking-policy')"><i class="bi bi-file-text"></i> Booking Policy</a>
+          <a href="#" onclick="event.preventDefault();openModal('payment-policy')"><i class="bi bi-file-text"></i> Payment Policy</a>
+          <a href="#" onclick="event.preventDefault();openModal('cancellation-policy')"><i class="bi bi-file-text"></i> Cancellation & Refund Policy</a>
+        </div>
+      </div>
+      <span class="error-text" id="policy-error" style="display:none;margin-top:8px;">You must agree to the policies before submitting.</span>
+    </div>
+
+    <!-- 6. Review summary (hidden until "Review" is clicked) -->
+    <div id="review-summary" style="display:none;">
+      <div class="card card-pad">
+        <div class="card-title"><i class="bi bi-clipboard-check" style="color:var(--blue-600);"></i><h2>Review Your Inquiry</h2></div>
+        <p style="font-size:12.5px;color:var(--slate-500);margin:0 0 14px;">Please confirm everything below before submitting.</p>
+        <div id="review-body"></div>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <button class="btn btn-outline" style="flex:1;" onclick="hideReview()"><i class="bi bi-pencil"></i> Edit</button>
+          <button class="btn btn-primary" style="flex:2;padding:13px;font-size:14px;" onclick="doSubmitInquiry()"><i class="bi bi-send"></i> Confirm &amp; Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <button id="btn-submit-inquiry" class="btn btn-primary btn-block" style="padding:13px;font-size:14px;" onclick="submitInquiry()"><i class="bi bi-send"></i> Review &amp; Submit Inquiry</button>
+
+    <div style="text-align:center;margin-top:14px;">
+      <a href="#" id="resend-link-toggle" onclick="event.preventDefault();toggleResendForm()" style="font-size:12px;color:var(--slate-400);text-decoration:underline;">Didn't receive the email? Resend my link</a>
+      <div id="resend-form" style="display:none;max-width:360px;margin:10px auto 0;text-align:left;">
+        <label style="font-size:11.5px;color:var(--slate-500);">Email used on the inquiry</label>
+        <input type="email" class="form-control" id="resend-email" placeholder="you@example.com" style="margin-top:4px;">
+        <button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="submitResendLink()"><i class="bi bi-envelope"></i> Resend my link</button>
+        <div id="resend-msg" style="font-size:12px;color:var(--slate-500);margin-top:8px;display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CHECK INQUIRY ============ -->
+  <div class="view" id="view-check-inquiry">
+    <div style="max-width:620px;margin:0 auto;">
+      <div class="hero" style="text-align:center;">
+        <h1>Check Your Inquiry</h1>
+        <p>Paste the tracking link from your email — no password required.</p>
+      </div>
+      <div id="cic-page"></div>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRMATION ============ -->
+  <div class="view" id="view-confirmation">
+    <div class="card confirm-wrap">
+      <div class="confirm-icon"><i class="bi bi-check-lg"></i></div>
+      <h2>Thank you for submitting your catering inquiry!</h2>
+      <p>Our team will respond within 24 hours.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+        <div class="ref-box" id="confirm-ref" style="margin-bottom:0;"></div>
+        <button type="button" class="btn btn-outline" id="copy-ref-btn" onclick="copyInquiryReference()" title="Copy reference number" style="padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:5px;">
+          <i class="bi bi-clipboard"></i><span id="copy-ref-label">Copy</span>
+        </button>
+      </div>
+      <p style="font-size:12.5px;">Email: <strong id="confirm-email"></strong></p>
+      <p style="max-width:440px;margin:14px auto 0;">We've also sent this reference number and your private tracking link to your email.</p>
+      <p style="max-width:440px;margin:14px auto 0;font-size:12.5px;color:var(--slate-500);">No account is required. Use the private link in your email to check your inquiry status, quotation, payment information, and booking updates.</p>
+    </div>
+  </div>
+
+  <!-- ============ STATUS PAGE ============ -->
+  <div class="view" id="view-status">
+    <div class="status-header">
+      <div>
+        <div class="ref">Inquiry <span id="st-ref"></span></div>
+        <h2 id="st-eventname"></h2>
+        <div class="status-meta">
+          <span><i class="bi bi-person"></i><span id="st-name"></span></span>
+          <span><i class="bi bi-calendar3"></i><span id="st-date"></span></span>
+          <span><i class="bi bi-people"></i><span id="st-guests"></span></span>
+          <span><i class="bi bi-box-seam"></i><span id="st-package"></span></span>
+        </div>
+      </div>
+      <span class="pill progress" id="st-status-pill">In Progress</span>
+    </div>
+
+    <!-- Lifecycle -->
+    <div class="card card-pad">
+      <div class="lifecycle" id="lifecycle-track"></div>
+    </div>
+
+    <!-- Quotation -->
+    <div class="card card-pad" id="quotation-card" style="display:none;">
+      <div class="card-title"><i class="bi bi-file-earmark-text" style="color:var(--blue-600);"></i><h2>Quotation</h2></div>
+      <div id="quotation-body"></div>
+    </div>
+
+    <!-- Billing -->
+    <div class="card card-pad">
+      <div class="card-title"><i class="bi bi-lock" style="color:var(--slate-500);"></i><h2>Billing & Payment</h2></div>
+
+      <div id="billing-locked">
+        <div class="locked-box">
+          <i class="bi bi-lock-fill"></i>
+          <h3>Billing details are locked</h3>
+          <p>For your privacy, billing details require a quick verification.<br>Send a code to <strong id="masked-email"></strong>?</p>
+          <button class="btn btn-primary" onclick="requestOtp()"><i class="bi bi-envelope"></i> Send Code</button>
+        </div>
+        <div id="otp-section" style="display:none;text-align:center;">
+          <p style="font-size:12.5px;color:var(--slate-500);">Enter the 6-digit code sent to your email.</p>
+          <div class="otp-inputs">
+            <input maxlength="1" class="otp-digit"><input maxlength="1" class="otp-digit"><input maxlength="1" class="otp-digit">
+            <input maxlength="1" class="otp-digit"><input maxlength="1" class="otp-digit"><input maxlength="1" class="otp-digit">
+          </div>
+          <button class="btn btn-primary" onclick="verifyOtp()">Confirm</button>
+        </div>
+      </div>
+
+      <div id="billing-unlocked" style="display:none;">
+      </div>
+    </div>
+
+    <!-- Status banner -->
+    <div class="status-banner pending" id="status-banner">
+      <div class="sb-icon" id="sb-icon"></div>
+      <div>
+        <div class="sb-title" id="sb-title"></div>
+        <div class="sb-text" id="sb-text"></div>
+      </div>
+    </div>
+
+    <!-- What's next -->
+    <div class="card card-pad" id="next-steps-card">
+      <div class="card-title"><h2>Our staff will contact you regarding</h2></div>
+      <ul class="next-list">
+        <li>Final guest count</li>
+        <li>Menu confirmation</li>
+        <li>Venue/setup requirements</li>
+        <li>Event schedule</li>
+        <li>Final preparations</li>
+        <li>Remaining balance if applicable</li>
+      </ul>
+    </div>
+
+    <!-- Coordinator card (shown once booking is confirmed) -->
+    <div class="card card-pad" id="coordinator-card" style="display:none;border:1px solid var(--green-100);background:var(--green-100);">
+      <div class="card-title"><i class="bi bi-check-circle-fill" style="color:var(--green-600);"></i><h2>You're All Set</h2></div>
+      <div class="quote-line"><span>Venue</span><span id="coord-venue"></span></div>
+      <div class="quote-line"><span>Event Coordinator</span><span id="coord-name"></span></div>
+      <div class="quote-line"><span>Coordinator Contact</span><span id="coord-contact"></span></div>
+      <div style="font-size:12px;color:var(--slate-600);margin-top:10px;line-height:1.6;">Everything from here is handled by our team — menu finalization, staffing, equipment, and delivery scheduling. You're welcome to visit the venue beforehand, and your coordinator is your point of contact for any last details before the event.</div>
+    </div>
+
+    <!-- Cancellation -->
+    <div class="card card-pad">
+      <div class="card-title"><h2>Cancellation</h2></div>
+      <div id="cancellation-area"></div>
+    </div>
+
+    <!-- Cancellation policy -->
+    <div class="card card-pad">
+      <div class="card-title"><h2>Cancellation Policy</h2></div>
+      <ul class="next-list">
+        <li>Cancellation before any payment</li>
+        <li>Cancellation after deposit/payment</li>
+        <li>Cancellation after preparations have begun</li>
+        <li>Cancellation close to the event date</li>
+        <li>Refund handling</li>
+        <li>Non-refundable costs, if applicable</li>
+      </ul>
+    </div>
+
+    <!-- Help -->
+    <div class="card card-pad">
+      <div class="card-title"><h2>Need Help?</h2></div>
+      <div class="help-row">
+        <div class="help-item"><i class="bi bi-telephone"></i><div>09XX XXX XXXX</div></div>
+        <div class="help-item"><i class="bi bi-envelope"></i><div>catering@example.com</div></div>
+        <div class="help-item"><i class="bi bi-clock"></i><div>8:00 AM – 6:00 PM</div></div>
+      </div>
+      <div class="callout info" style="margin-top:12px;"><i class="bi bi-info-circle"></i><span>Please provide your inquiry reference (<strong id="help-ref"></strong>) when contacting our staff.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal-backdrop" id="modal-view-package">
+  <div class="modal">
+    <div class="modal-head"><h3 id="pkgmodal-title">Package Details</h3><button class="modal-close" onclick="closeModal('view-package')"><i class="bi bi-x-lg"></i></button></div>
+    <div class="modal-body" id="pkgmodal-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('view-package')">Close</button>
+      <button class="btn btn-primary" id="pkgmodal-select-btn">Select This Package</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-addons">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head"><h3>Optional Add-ons</h3><button class="modal-close" onclick="closeModal('addons')"><i class="bi bi-x-lg"></i></button></div>
+    <div class="modal-body">
+      <p style="font-size:11.5px;color:var(--slate-500);margin:0 0 6px;">Add extra dishes, equipment, or staff on top of your package. Changes apply immediately.</p>
+      <div id="premade-addons-body"><div style="font-size:12px;color:var(--slate-500);padding:4px 0;">Loading options...</div></div>
+    </div>
+    <div class="modal-foot" style="align-items:center;">
+      <div class="guest-total" style="text-align:left;margin-right:auto;">
+        <div class="lbl">Add-ons subtotal</div>
+        <div class="amt" id="pa-total" style="font-size:15px;">&#8369;0</div>
+      </div>
+      <button class="btn btn-primary" onclick="closeModal('addons')">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-booking-policy">
+  <div class="modal">
+    <div class="modal-head"><h3>Booking Policy</h3><button class="modal-close" onclick="closeModal('booking-policy')"><i class="bi bi-x-lg"></i></button></div>
+    <div class="modal-body">
+      <ul class="next-list">
+        <li>Inquiry submission does not equal booking confirmation.</li>
+        <li>Final booking requires quotation acceptance and required payment verification.</li>
+        <li>Guest count changes may affect the final price.</li>
+        <li>Changes to confirmed bookings require staff approval.</li>
+      </ul>
+    </div>
+    <div class="modal-foot"><button class="btn btn-primary" onclick="closeModal('booking-policy')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-payment-policy">
+  <div class="modal">
+    <div class="modal-head"><h3>Payment Policy</h3><button class="modal-close" onclick="closeModal('payment-policy')"><i class="bi bi-x-lg"></i></button></div>
+    <div class="modal-body">
+      <ul class="next-list">
+        <li>A deposit may be required to confirm your booking.</li>
+        <li>Payment submission does not automatically mean payment verification.</li>
+        <li>Full payment terms will be included in your official quotation.</li>
+        <li>Accepted methods: GCash, Maya, Bank Transfer, and Cash / On-site payment.</li>
+      </ul>
+    </div>
+    <div class="modal-foot"><button class="btn btn-primary" onclick="closeModal('payment-policy')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-cancellation-policy">
+  <div class="modal">
+    <div class="modal-head"><h3>Cancellation & Refund Policy</h3><button class="modal-close" onclick="closeModal('cancellation-policy')"><i class="bi bi-x-lg"></i></button></div>
+    <div class="modal-body">
+      <ul class="next-list">
+        <li>Cancellation after payment may be subject to the company's cancellation and refund policy.</li>
+        <li>Cancellation after preparation has started may have non-refundable costs.</li>
+        <li>Refund amounts, if any, will be communicated by our staff upon review.</li>
+        <li>Cancellations close to the event date may be handled differently than early cancellations.</li>
+      </ul>
+    </div>
+    <div class="modal-foot"><button class="btn btn-primary" onclick="closeModal('cancellation-policy')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-accepted-next">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-body" style="text-align:center;padding:36px 28px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--green-50,#f0fdf4);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><i class="bi bi-check-circle" style="font-size:28px;color:var(--green-600,#16a34a);"></i></div>
+      <h3 style="font-size:17px;font-weight:700;color:var(--slate-900);margin:0 0 8px;">Quotation Accepted!</h3>
+      <p style="font-size:13.5px;color:var(--slate-500);margin:0 0 20px;line-height:1.6;">Your booking has been created. You can now proceed to payment to confirm your reservation.</p>
+      <button class="btn btn-primary" onclick="closeModal('accepted-next')" style="width:100%;padding:10px;">Go to Payment</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="bi bi-check-circle"></i><span id="toast-msg"></span></div>
+
+<script>
+var API_BASE = 'http://127.0.0.1:8001';
+
+function apiRequest(path, options) {
+  options = options || {};
+  var headers = options.headers || {};
+  if (options.body) headers['Content-Type'] = 'application/json';
+  return fetch(API_BASE + path, { method: options.method || 'GET', headers: headers, body: options.body })
+    .then(function(res) {
+      if (res.status === 204) return null;
+      return res.json().then(function(data) { return { status: res.status, ok: res.ok, data: data }; }).catch(function() { return { status: res.status, ok: res.ok, data: null }; });
+    })
+    .catch(function() { return { status: 0, ok: false, data: null }; });
+}
+
+function escHtml(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function titleCaseStr(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ') : '\u2014'; }
+function fmtDate(d) { if (!d) return '\u2014'; try { return new Date(d).toLocaleDateString('en-PH', {year:'numeric',month:'short',day:'numeric'}); } catch(e) { return String(d); } }
+function fmtTime(t) { if (!t) return ''; try { var p = t.split(':'); var h = parseInt(p[0]); var m = p[1]; return (h > 12 ? h-12 : (h === 0 ? 12 : h)) + ':' + m + (h >= 12 ? ' PM' : ' AM'); } catch(e) { return t; } }
+
+/* ===================== STATE ===================== */
+let apiPackages = [];
+let apiVenues = [];
+let apiCatalog = { dishes: [], equipment: [], staff: [] };
+let apiDerivedRatios = [];
+let selectedPackageIdx = -1;
+let pkgType = 'premade';
+let venueMode = 'own';
+var selectedVenueId = null;
+var selectedVenueFee = 0;
+var selectedPayMethod = 'gcash';
+var selectedProofFile = null;
+var lastSubmittedPaymentId = null;
+var currentStage = 0;
+var inquiryRef = '';
+var accessToken = '';
+let statusData = null;
+var billingToken = null;
+
+const LIFECYCLE_STEPS = ['Inquiry Submitted','Quotation Prepared','Quotation Accepted','Deposit/Payment','Payment Verified','Booking Confirmed','Event Preparation','Event','Completed'];
+
+/* ===================== NAV ===================== */
+function goNav(view){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-links button').forEach(function(b){b.classList.remove('active');});
+  var btn = document.querySelector('[data-nav="'+view+'"]');
+  if(btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+function showView(id){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('view-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ===================== TOAST ===================== */
+function showToast(msg, isError){
+  var t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : ' success');
+  setTimeout(function(){ t.className = 'toast'; }, 3200);
+}
+
+/* ===================== PACKAGE RENDERING ===================== */
+function renderPackageGrid() {
+  var grid = document.getElementById('pkg-grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--slate-400);"><i class="bi bi-hourglass-split"></i> Loading packages...</div>';
+  apiRequest('/public/packages').then(function(res) {
+    if (!res.ok || !res.data || !res.data.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--slate-400);">No packages available at this time.</div>';
+      return;
+    }
+    apiPackages = res.data;
+    grid.innerHTML = res.data.map(function(pkg, idx) {
+      var priceLabel = pkg.pricing_method === 'per_guest' ? '<small>/ guest</small>' : '<small>flat rate</small>';
+      var preview = pkg.description || '';
+      var dishHtml = '';
+      if (pkg.dish_names && pkg.dish_names.length) {
+        var shown = pkg.dish_names.slice(0, 5);
+        var more = pkg.dish_names.length - shown.length;
+        dishHtml = '<div class="dishes" style="margin-top:8px;font-size:11px;color:var(--slate-500);line-height:1.5;">' +
+          shown.map(function(d) { return escHtml(d); }).join(' &middot; ') +
+          (more > 0 ? ' <span style="color:var(--slate-400);">+' + more + ' more</span>' : '') +
+          '</div>';
+      }
+      var paxInfo = '';
+      if (pkg.min_pax || pkg.max_pax) {
+        paxInfo = '<div style="font-size:11px;color:var(--slate-400);margin-top:4px;">Minimum ' + (pkg.min_pax || 0) + ' guests' + (pkg.max_pax ? ' \u2014 Max ' + pkg.max_pax : '') + '</div>';
+      }
+      return '<div class="pkg-card" data-pkg-idx="' + idx + '">' +
+        '<div class="sel-check"><i class="bi bi-check"></i></div>' +
+        '<h3>' + escHtml(pkg.name) + '</h3>' +
+        (pkg.service_style ? '<span style="display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--blue-50);color:var(--blue-700);margin-bottom:6px;">' + escHtml(pkg.service_style) + '</span> ' : '') +
+        '<div class="price">\u20B1' + Number(pkg.base_price).toLocaleString() + priceLabel + '</div>' +
+        '<div class="preview">' + escHtml(preview) + '</div>' +
+        dishHtml +
+        paxInfo +
+        '<div class="foot">' +
+        '<button type="button" class="btn btn-outline btn-sm" onclick="viewPackageDetails(' + idx + ')">View Details</button>' +
+        '<button type="button" class="btn btn-primary btn-sm" onclick="selectPackage(' + idx + ')">Select This Package</button>' +
+        '</div></div>';
+    }).join('');
+  });
+}
+
+function viewPackageDetails(idx) {
+  var pkg = apiPackages[idx];
+  if (!pkg) return;
+  apiRequest('/public/packages/' + pkg.id).then(function(res) {
+    var data = res.ok ? res.data : pkg;
+    document.getElementById('pkgmodal-title').textContent = data.name + ' \u2014 \u20B1' + Number(data.base_price).toLocaleString() + (data.pricing_method === 'per_guest' ? ' / guest' : ' flat');
+    var bodyHtml = '';
+    if (data.service_style) bodyHtml += '<div style="margin-bottom:12px;"><span style="display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:4px;background:var(--blue-50);color:var(--blue-700);">Service: ' + escHtml(data.service_style) + '</span></div>';
+    if (data.description) bodyHtml += '<p style="font-size:13px;color:var(--slate-600);margin:0 0 16px;">' + escHtml(data.description) + '</p>';
+    if (data.min_pax || data.max_pax) {
+      bodyHtml += '<div style="font-size:12.5px;color:var(--slate-500);margin-bottom:16px;">Guest range: ' + (data.min_pax || 0) + ' \u2013 ' + (data.max_pax || 'unlimited') + '</div>';
+    }
+    if (data.derived_ratios && data.derived_ratios.length) {
+      var LABELS = { chafing_dish: 'Chafing dishes', table: 'Buffet/round tables', server: 'Servers', setup_staff: 'Setup staff' };
+      bodyHtml += '<div style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:var(--slate-700);margin-bottom:8px;">Included per package:</div>';
+      data.derived_ratios.forEach(function(r) {
+        var label = LABELS[r.item_key] || r.item_key.replace(/_/g, ' ');
+        label = label.charAt(0).toUpperCase() + label.slice(1);
+        bodyHtml += '<div style="font-size:12px;color:var(--slate-600);">' + escHtml(label) + ': 1 per ' + r.per_guests + ' guests (min ' + r.minimum + ')</div>';
+      });
+      bodyHtml += '</div>';
+    }
+    if (data.default_items && data.default_items.length) {
+      bodyHtml += '<div style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:var(--slate-700);margin-bottom:8px;">Default dishes:</div>';
+      data.default_items.forEach(function(item) {
+        bodyHtml += '<div style="font-size:12px;color:var(--slate-600);">' + escHtml(item.name) + ' &times; ' + item.quantity + ' ' + escHtml(item.unit) + '</div>';
+      });
+      bodyHtml += '</div>';
+    }
+    if (data.included_items && data.included_items.length) {
+      bodyHtml += '<div style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:var(--slate-700);margin-bottom:8px;">Included dishes:</div>';
+      data.included_items.forEach(function(item) {
+        bodyHtml += '<div style="font-size:12px;color:var(--slate-600);">' + escHtml(item.name) + ' &times; ' + item.quantity + ' ' + escHtml(item.unit) + '</div>';
+      });
+      bodyHtml += '</div>';
+    }
+    document.getElementById('pkgmodal-body').innerHTML = bodyHtml;
+  });
+  document.getElementById('pkgmodal-select-btn').onclick = function() { selectPackage(idx); closeModal('view-package'); };
+  openModal('view-package');
+}
+
+function selectPackage(idx) {
+  selectedPackageIdx = idx;
+  var pkg = apiPackages[idx];
+  if (!pkg) return;
+  document.querySelectorAll('.pkg-card').forEach(function(c, i) { c.classList.toggle('selected', i === idx); });
+  document.getElementById('guest-adjust-box').style.display = 'block';
+  document.getElementById('ga-pkg-name').textContent = pkg.name;
+  document.getElementById('ga-pkg-price').textContent = '\u20B1' + Number(pkg.base_price).toLocaleString() + (pkg.pricing_method === 'per_guest' ? ' per guest' : ' flat rate');
+  document.getElementById('premade-service-style').value = '';
+  renderPremadeAddons();
+  apiDerivedRatios = [];
+  apiRequest('/public/packages/' + pkg.id).then(function(res) {
+    if (res.ok && res.data) {
+      apiDerivedRatios = res.data.derived_ratios || [];
+    }
+    recalcPremade();
+  });
+}
+
+function adjustGuests(delta){
+  var inp = document.getElementById('ga-guests');
+  var v = parseInt(inp.value,10) || 0;
+  var pkg = apiPackages[selectedPackageIdx];
+  var floor = (pkg && pkg.min_pax) ? pkg.min_pax : 10;
+  v = Math.max(floor, v + delta);
+  inp.value = v;
+  recalcPremade();
+}
+
+function computeDerivedQty(key, guests) {
+  var LABELS = { chafing_dish: 'Chafing dishes', table: 'Buffet/round tables', server: 'Servers', setup_staff: 'Setup staff', place_setting: 'Place settings' };
+  for (var i = 0; i < apiDerivedRatios.length; i++) {
+    var r = apiDerivedRatios[i];
+    if (r.item_key === key) {
+      return Math.max(r.minimum, Math.ceil(guests / r.per_guests));
+    }
+  }
+  return 0;
+}
+
+function recalcPremade() {
+  var pkg = apiPackages[selectedPackageIdx];
+  var floor = (pkg && pkg.min_pax) ? pkg.min_pax : 10;
+  var guests = Math.max(floor, parseInt(document.getElementById('ga-guests').value, 10) || floor);
+  document.getElementById('ga-guests').value = guests;
+  if (!pkg) return;
+  var total = pkg.pricing_method === 'per_guest' ? guests * pkg.base_price : pkg.base_price;
+  document.getElementById('ga-total').textContent = '\u20B1' + total.toLocaleString();
+  var breakdownHtml = '<div>Place settings: <strong>' + guests + '</strong></div>';
+  if (apiDerivedRatios.length) {
+    var LABELS = { chafing_dish: 'Chafing dishes', table: 'Buffet/round tables', server: 'Servers', setup_staff: 'Setup staff' };
+    apiDerivedRatios.forEach(function(r) {
+      var qty = Math.max(r.minimum, Math.ceil(guests / r.per_guests));
+      var label = LABELS[r.item_key] || r.item_key.replace(/_/g, ' ');
+      breakdownHtml += '<div>' + escHtml(label.charAt(0).toUpperCase() + label.slice(1)) + ': <strong>' + qty + '</strong></div>';
+    });
+  } else {
+    breakdownHtml += '<div>Chafing dishes: <strong>' + Math.max(2, Math.ceil(guests / 25)) + '</strong></div>' +
+      '<div>Buffet/round tables: <strong>' + Math.max(1, Math.ceil(guests / 10)) + '</strong></div>' +
+      '<div>Servers: <strong>' + Math.max(2, Math.ceil(guests / 20)) + '</strong></div>' +
+      '<div>Setup staff: <strong>' + Math.max(1, Math.ceil(guests / 40)) + '</strong></div>';
+  }
+  document.getElementById('ga-breakdown').innerHTML = breakdownHtml;
+  recalcPremadeAddons();
+  updateSummary();
+}
+
+function setPkgType(type){
+  pkgType = type;
+  document.getElementById('type-premade').classList.toggle('active', type==='premade');
+  document.getElementById('type-custom').classList.toggle('active', type==='custom');
+  document.getElementById('premade-section').style.display = type==='premade' ? 'block' : 'none';
+  document.getElementById('custom-section').style.display = type==='custom' ? 'block' : 'none';
+  if (type === 'custom') renderCustomOptions();
+  updateSummary();
+}
+
+function getSelectedCatalogIds() {
+  var ids = [];
+  document.querySelectorAll('.custom-dish:checked, .custom-equip:checked, .custom-staff:checked').forEach(function(el) {
+    ids.push(el.value);
+  });
+  return ids;
+}
+
+/* ===================== CUSTOM PACKAGE ===================== */
+function renderCustomOptions() {
+  if (!apiCatalog.dishes.length && !apiCatalog.equipment.length && !apiCatalog.staff.length) {
+    apiRequest('/public/catalog-items').then(function(res) {
+      if (res.ok && res.data) {
+        apiCatalog = res.data;
+      }
+      renderCustomOptionsUI();
+    });
+  } else {
+    renderCustomOptionsUI();
+  }
+}
+
+function renderCustomOptionsUI() {
+  var dishesHtml = '', equipHtml = '', staffHtml = '';
+  apiCatalog.dishes.forEach(function(d) {
+    var priceLabel = d.pricing_unit === 'per_guest' ? '/guest' : 'flat';
+    dishesHtml += '<div class="check-row"><input type="checkbox" class="custom-dish" value="' + d.id + '" data-price="' + d.price + '" data-unit="' + d.pricing_unit + '" onchange="recalcCustom()"><label>' + escHtml(d.name) + ' <span style="color:var(--slate-400);font-size:11px;">(' + escHtml(d.category || '') + ')</span></label><span class="price-tag">\u20B1' + Number(d.price).toLocaleString() + ' ' + priceLabel + '</span></div>';
+  });
+  apiCatalog.equipment.forEach(function(eq) {
+    var priceLabel = eq.pricing_unit === 'per_guest' ? '/guest' : 'flat';
+    equipHtml += '<div class="check-row"><input type="checkbox" class="custom-equip" value="' + eq.id + '" data-price="' + eq.price + '" data-unit="' + eq.pricing_unit + '" onchange="recalcCustom()"><label>' + escHtml(eq.name) + ' <span style="color:var(--slate-400);font-size:11px;">(' + escHtml(eq.category || '') + ')</span></label><span class="price-tag">\u20B1' + Number(eq.price).toLocaleString() + ' ' + priceLabel + '</span></div>';
+  });
+  apiCatalog.staff.forEach(function(st) {
+    var priceLabel = st.pricing_unit === 'per_guest' ? '/guest' : 'flat';
+    staffHtml += '<div class="check-row"><input type="checkbox" class="custom-staff" value="' + st.id + '" data-price="' + st.price + '" data-unit="' + st.pricing_unit + '" onchange="recalcCustom()"><label>' + escHtml(st.name) + ' <span style="color:var(--slate-400);font-size:11px;">(' + escHtml(st.category || '') + ')</span></label><span class="price-tag">\u20B1' + Number(st.price).toLocaleString() + ' ' + priceLabel + '</span></div>';
+  });
+  if (dishesHtml) document.getElementById('custom-dishes').innerHTML = dishesHtml;
+  else document.getElementById('custom-dishes').innerHTML = '<div style="font-size:12px;color:var(--slate-500);padding:8px;">No dishes available.</div>';
+  if (equipHtml) document.getElementById('custom-equipment').innerHTML = equipHtml;
+  else document.getElementById('custom-equipment').innerHTML = '<div style="font-size:12px;color:var(--slate-500);padding:8px;">No equipment available.</div>';
+  if (staffHtml) document.getElementById('custom-staff').innerHTML = staffHtml;
+  else document.getElementById('custom-staff').innerHTML = '<div style="font-size:12px;color:var(--slate-500);padding:8px;">No staff available.</div>';
+}
+
+function recalcCustom() {
+  var guests = Math.max(1, parseInt(document.getElementById('custom-guests').value, 10) || 1);
+  var total = 0;
+  document.querySelectorAll('.custom-dish:checked').forEach(function(el) {
+    var price = parseFloat(el.dataset.price) || 0;
+    var unit = el.dataset.unit || 'per_guest';
+    total += unit === 'per_guest' ? price * guests : price;
+  });
+  document.querySelectorAll('.custom-equip:checked').forEach(function(el) {
+    var price = parseFloat(el.dataset.price) || 0;
+    var unit = el.dataset.unit || 'flat';
+    total += unit === 'per_guest' ? price * guests : price;
+  });
+  document.querySelectorAll('.custom-staff:checked').forEach(function(el) {
+    var price = parseFloat(el.dataset.price) || 0;
+    var unit = el.dataset.unit || 'per_guest';
+    total += unit === 'per_guest' ? price * guests : price;
+  });
+  document.getElementById('custom-total').textContent = '\u20B1' + total.toLocaleString();
+  updateSummary();
+}
+
+/* ===================== PREMADE ADD-ONS + SERVICE STYLE ===================== */
+function ensurePremadeCatalog(cb) {
+  if (apiCatalog.dishes.length || apiCatalog.equipment.length || apiCatalog.staff.length) { cb(); return; }
+  apiRequest('/public/catalog-items').then(function(res) {
+    if (res.ok && res.data) apiCatalog = res.data;
+    cb();
+  });
+}
+
+function renderPremadeAddons() {
+  var pkg = apiPackages[selectedPackageIdx];
+  if (pkg && pkg.service_style) document.getElementById('pa-default-style-label').textContent = pkg.service_style.charAt(0).toUpperCase() + pkg.service_style.slice(1);
+  ensurePremadeCatalog(function() {
+    var body = document.getElementById('premade-addons-body');
+    var html = '';
+    [['Dishes', apiCatalog.dishes, 'pa-dish'], ['Equipment', apiCatalog.equipment, 'pa-equip'], ['Staff', apiCatalog.staff, 'pa-staff']].forEach(function(group) {
+      var title = group[0], list = group[1], cls = group[2];
+      if (!list.length) return;
+      html += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-500);margin:8px 0 4px;">' + title + '</div>';
+      list.forEach(function(item) {
+        var perGuest = item.pricing_unit === 'per_guest';
+        var priceLabel = perGuest ? '/guest' : 'flat';
+        var qtyCtl = perGuest ? '' :
+          '<span class="qty-control" style="display:inline-flex;margin-left:8px;vertical-align:middle;">' +
+          '<button type="button" onclick="adjustAddonQty(this,-1)" aria-label="Decrease quantity">\u2212</button>' +
+          '<input class="pa-qty" type="number" value="1" min="1" max="500" disabled onclick="event.stopPropagation()">' +
+          '<button type="button" onclick="adjustAddonQty(this,1)" aria-label="Increase quantity">+</button>' +
+          '</span>';
+        html += '<div class="check-row"><input type="checkbox" class="' + cls + '" value="' + item.id + '" data-price="' + item.price + '" data-unit="' + item.pricing_unit + '" data-name="' + escHtml(item.name).replace(/"/g, '&quot;') + '" onchange="togglePremadeAddon(this)">' +
+          '<label>' + escHtml(item.name) + ' <span style="color:var(--slate-400);font-size:11px;">(' + escHtml(item.category || '') + ')</span></label>' +
+          '<span class="price-tag" style="display:inline-flex;align-items:center;gap:6px;"><span>\u20B1' + Number(item.price).toLocaleString() + ' ' + priceLabel + '</span>' + qtyCtl + '</span></div>';
+      });
+    });
+    if (!html) html = '<div style="font-size:12px;color:var(--slate-500);padding:4px 0;">No add-ons available right now.</div>';
+    body.innerHTML = html;
+    recalcPremadeAddons();
+  });
+}
+
+function togglePremadeAddon(el) {
+  var qty = el.parentElement.querySelector('.pa-qty');
+  if (qty) qty.disabled = !el.checked;
+  recalcPremadeAddons();
+}
+
+function adjustAddonQty(btn, delta) {
+  var inp = btn.parentElement.querySelector('.pa-qty');
+  if (!inp || inp.disabled) return;
+  var v = Math.max(1, Math.min(500, (parseInt(inp.value, 10) || 1) + delta));
+  inp.value = v;
+  recalcPremadeAddons();
+}
+
+function getPremadeAddons() {
+  var out = [];
+  document.querySelectorAll('.pa-dish:checked, .pa-equip:checked, .pa-staff:checked').forEach(function(el) {
+    var qtyInp = el.parentElement.querySelector('.pa-qty');
+    var qty = el.dataset.unit === 'per_guest' ? 1 : (qtyInp ? (parseInt(qtyInp.value, 10) || 1) : 1);
+    out.push({ catalog_item_id: el.value, quantity: qty });
+  });
+  return out;
+}
+
+function computePremadeAddonTotal(guests) {
+  var total = 0;
+  document.querySelectorAll('.pa-dish:checked, .pa-equip:checked, .pa-staff:checked').forEach(function(el) {
+    var price = parseFloat(el.dataset.price) || 0;
+    var unit = el.dataset.unit || 'per_guest';
+    var qtyInp = el.parentElement.querySelector('.pa-qty');
+    var qty = unit === 'per_guest' ? 1 : (qtyInp ? (parseInt(qtyInp.value, 10) || 1) : 1);
+    total += unit === 'per_guest' ? price * guests : price * qty;
+  });
+  return total;
+}
+
+function recalcPremadeAddons() {
+  var guests = parseInt(document.getElementById('ga-guests').value, 10) || 0;
+  document.getElementById('pa-total').textContent = '\u20B1' + computePremadeAddonTotal(guests).toLocaleString();
+  updatePremadeAddonSummary();
+  updateSummary();
+}
+
+function openPremadeAddons() {
+  recalcPremadeAddons();
+  openModal('addons');
+}
+
+function updatePremadeAddonSummary() {
+  var guests = parseInt(document.getElementById('ga-guests').value, 10) || 0;
+  var n = document.querySelectorAll('.pa-dish:checked, .pa-equip:checked, .pa-staff:checked').length;
+  var line = document.getElementById('pa-summary-line');
+  var btn = document.getElementById('pa-open-btn');
+  if (!line || !btn) return;
+  if (!n) {
+    line.textContent = 'No add-ons selected yet.';
+    btn.textContent = 'Add Extras';
+  } else {
+    line.textContent = n + ' selected \u2014 \u20B1' + computePremadeAddonTotal(guests).toLocaleString();
+    btn.textContent = 'Edit Extras (' + n + ')';
+  }
+}
+
+/* ===================== VENUE ===================== */
+function setVenueMode(mode){
+  venueMode = mode;
+  document.getElementById('venue-own-opt').classList.toggle('active', mode==='own');
+  document.getElementById('venue-need-opt').classList.toggle('active', mode==='need');
+  document.getElementById('venue-own-section').style.display = mode==='own' ? 'block' : 'none';
+  document.getElementById('venue-need-section').style.display = mode==='need' ? 'block' : 'none';
+  if(mode==='own'){ selectedVenueFee = 0; selectedVenueId = null; }
+  if(mode==='need'){ renderVenueList(); }
+  updateSummary();
+}
+
+function renderVenueList() {
+  var guests = pkgType === 'premade' ? parseInt(document.getElementById('ga-guests').value, 10) || 0 : parseInt(document.getElementById('custom-guests').value, 10) || 0;
+  var eventDate = document.getElementById('in-date').value;
+  var list = document.getElementById('venue-list');
+  list.innerHTML = '<div style="padding:10px;color:var(--slate-400);font-size:12px;">Loading venues...</div>';
+  var url = '/public/venues';
+  if (eventDate) url += '?event_date=' + encodeURIComponent(eventDate + 'T00:00:00');
+  apiRequest(url).then(function(res) {
+    if (!res.ok || !res.data || !res.data.length) {
+      list.innerHTML = '<div style="padding:10px;color:var(--slate-400);font-size:12px;">No venues available. You can specify your own venue above.</div>';
+      return;
+    }
+    apiVenues = res.data;
+    list.innerHTML = res.data.map(function(v, i) {
+      var tooSmall = v.capacity < guests;
+      var notAvailable = v.available === false;
+      var blocked = tooSmall || notAvailable;
+      var isSelected = selectedVenueId === v.id;
+      var reason = '';
+      if (notAvailable) reason = '<div class="vs" style="color:var(--amber-600);">Not available on this date</div>';
+      else if (tooSmall) reason = '<div class="vs" style="color:var(--red-600);">Capacity too small for ' + guests + ' guests</div>';
+      var details = 'Capacity: ' + v.capacity + ' guests';
+      if (v.description) details += ' \u2014 ' + escHtml(v.description);
+      var extra = '';
+      if (v.address) extra += '<div class="vs">' + escHtml(v.address) + '</div>';
+      if (v.parking_capacity) extra += '<div class="vs">Parking for ' + v.parking_capacity + ' vehicles</div>';
+      var btnLabel = blocked ? 'Unavailable' : (isSelected ? '<i class="bi bi-check-lg"></i> Selected' : 'Select');
+      var btnClass = isSelected ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+      return '<div class="venue-card ' + (blocked ? 'disabled' : '') + (isSelected ? ' selected' : '') + '">' +
+        '<div><div class="vi">' + escHtml(v.name) + '</div>' +
+        '<div class="vs">' + details + '</div>' +
+        extra + reason +
+        '</div><div class="vr">' +
+        '<div style="font-weight:700;font-size:13px;margin-bottom:6px;">\u20B1' + Number(v.fee).toLocaleString() + '</div>' +
+        '<button type="button" class="' + btnClass + '" ' + (blocked ? 'disabled' : '') + ' onclick="selectVenue(' + i + ')">' + btnLabel + '</button>' +
+        '</div></div>';
+    }).join('');
+  });
+}
+
+function selectVenue(i) {
+  var v = apiVenues[i];
+  if (!v) return;
+  selectedVenueId = v.id;
+  selectedVenueFee = Number(v.fee);
+  showToast(v.name + ' selected');
+  renderVenueList();
+  updateSummary();
+}
+
+/* ===================== SUMMARY ===================== */
+function updateSummary() {
+  var guests, pkgCost;
+  if (pkgType === 'premade') {
+    guests = parseInt(document.getElementById('ga-guests').value, 10) || 0;
+    var pkg = apiPackages[selectedPackageIdx];
+    pkgCost = pkg ? (pkg.pricing_method === 'per_guest' ? guests * pkg.base_price : pkg.base_price) : 0;
+  } else {
+    guests = parseInt(document.getElementById('custom-guests').value, 10) || 0;
+    pkgCost = parseInt((document.getElementById('custom-total').textContent || '\u20B10').replace(/[^\d]/g, ''), 10) || 0;
+  }
+  document.getElementById('sum-guests').textContent = guests;
+  document.getElementById('sum-package').textContent = '\u20B1' + pkgCost.toLocaleString();
+  var addonCost = pkgType === 'premade' ? computePremadeAddonTotal(guests) : 0;
+  var addonsRow = document.getElementById('sum-addons-row');
+  if (pkgType === 'premade' && addonCost > 0) {
+    addonsRow.style.display = 'flex';
+    document.getElementById('sum-addons').textContent = '\u20B1' + addonCost.toLocaleString();
+  } else {
+    addonsRow.style.display = 'none';
+  }
+  var venueRow = document.getElementById('sum-venue-row');
+  if (venueMode === 'need' && selectedVenueFee > 0) {
+    venueRow.style.display = 'flex';
+    document.getElementById('sum-venue').textContent = '\u20B1' + selectedVenueFee.toLocaleString();
+  } else {
+    venueRow.style.display = 'none';
+  }
+  var total = pkgCost + addonCost + (venueMode === 'need' ? selectedVenueFee : 0);
+  document.getElementById('sum-total').textContent = '\u20B1' + total.toLocaleString();
+}
+
+/* ===================== VALIDATION + SUBMIT ===================== */
+function validatePolicyCheck(){
+  var checked = document.getElementById('in-policy-agree').checked;
+  document.getElementById('policy-error').style.display = checked ? 'none' : 'block';
+}
+
+function setErr(fieldId, hasError){
+  document.getElementById(fieldId).classList.toggle('has-error', hasError);
+}
+
+function submitInquiry() {
+  var ok = true;
+  var name = document.getElementById('in-name').value.trim();
+  var email = document.getElementById('in-email').value.trim();
+  var contact = document.getElementById('in-contact').value.trim();
+  var date = document.getElementById('in-date').value;
+  var time = document.getElementById('in-time').value;
+  var additional = document.getElementById('in-additional').value.trim();
+  var dietary = document.getElementById('in-dietary').value.trim();
+  var setup = document.getElementById('in-setup').value.trim();
+  var emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  setErr('fg-name', !name); if (!name) ok = false;
+  setErr('fg-email', !emailValid); if (!emailValid) ok = false;
+  var contactValid = /^(09\d{9}|\+639\d{9})$/.test(contact.replace(/[\s-]/g, ''));
+  setErr('fg-contact', !contact || !contactValid); if (!contact || !contactValid) ok = false;
+  document.getElementById('in-contact').placeholder = contact && !contactValid ? 'Use 09XXXXXXXXX or +639XXXXXXXXX' : '09XX XXX XXXX';
+  setErr('fg-date', !date); if (!date) ok = false;
+  setErr('fg-time', !time); if (!time) ok = false;
+
+  var policyChecked = document.getElementById('in-policy-agree').checked;
+  document.getElementById('policy-error').style.display = policyChecked ? 'none' : 'block';
+  if (!policyChecked) ok = false;
+
+  if (venueMode === 'own') {
+    var vn = document.getElementById('in-venue-name').value.trim();
+    var va = document.getElementById('in-venue-address').value.trim();
+    if (!vn || !va) { showToast('Please complete your venue name and address.', true); ok = false; }
+  }
+
+  if (pkgType === 'premade' && selectedPackageIdx >= 0 && apiPackages[selectedPackageIdx]) {
+    var pkg = apiPackages[selectedPackageIdx];
+    var gc = parseInt(document.getElementById('ga-guests').value, 10) || 0;
+    if (pkg.min_pax && gc < pkg.min_pax) {
+      showToast(pkg.name + ' requires at least ' + pkg.min_pax + ' guests. You entered ' + gc + '.', true); ok = false;
+    }
+    if (pkg.max_pax && gc > pkg.max_pax) {
+      showToast(pkg.name + ' supports at most ' + pkg.max_pax + ' guests. You entered ' + gc + '.', true); ok = false;
+    }
+  }
+
+  if (!ok) {
+    showToast(contact && !contactValid
+      ? 'Contact number must be 11 digits starting with 09 (e.g. 09171234567) or +639XXXXXXXXX.'
+      : 'Please complete all required fields.', true);
+    return;
+  }
+
+  if (pkgType === 'custom') {
+    var customSS = document.getElementById('custom-service-style').value;
+    if (!customSS) { showToast('Please select a service style for your custom package.', true); return; }
+  }
+
+  showReview();
+}
+
+function showReview() {
+  var name = document.getElementById('in-name').value.trim();
+  var email = document.getElementById('in-email').value.trim();
+  var contact = document.getElementById('in-contact').value.trim();
+  var date = document.getElementById('in-date').value;
+  var time = document.getElementById('in-time').value;
+  var additional = document.getElementById('in-additional').value.trim();
+  var dietary = document.getElementById('in-dietary').value.trim();
+  var setup = document.getElementById('in-setup').value.trim();
+  var guestCount = pkgType === 'premade' ? (parseInt(document.getElementById('ga-guests').value, 10) || 50) : (parseInt(document.getElementById('custom-guests').value, 10) || 50);
+  var pkgName = (selectedPackageIdx >= 0 && apiPackages[selectedPackageIdx]) ? apiPackages[selectedPackageIdx].name : 'Custom Package';
+  var venueAddr = venueMode === 'own' ? (document.getElementById('in-venue-name').value.trim() + ' &mdash; ' + document.getElementById('in-venue-address').value.trim()) : (selectedVenueId ? 'Venue to be assigned' : 'Customer-provided venue');
+
+  var sumGuests = document.getElementById('sum-guests').textContent;
+  var sumTotal = document.getElementById('sum-total').textContent;
+  var sumPkg = document.getElementById('sum-package').textContent;
+  var sumVenueRow = document.getElementById('sum-venue-row');
+  var sumVenue = sumVenueRow.style.display !== 'none' ? document.getElementById('sum-venue').textContent : null;
+  var premadeStyle = pkgType === 'premade' ? document.getElementById('premade-service-style').value : '';
+  var addonCount = pkgType === 'premade' ? getPremadeAddons().length : 0;
+  var addonsRowEl = document.getElementById('sum-addons-row');
+  var sumAddons = (pkgType === 'premade' && addonsRowEl.style.display !== 'none') ? document.getElementById('sum-addons').textContent : null;
+
+  var html = '';
+  html += '<div class="quote-line"><span>Name</span><span>' + escHtml(name) + '</span></div>';
+  html += '<div class="quote-line"><span>Email</span><span>' + escHtml(email) + '</span></div>';
+  html += '<div class="quote-line"><span>Contact</span><span>' + escHtml(contact) + '</span></div>';
+  html += '<div class="quote-line"><span>Event Date</span><span>' + (date ? fmtDate(date + 'T00:00:00') : '\u2014') + (time ? ' \u00B7 ' + fmtTime(time) : '') + '</span></div>';
+  html += '<div class="quote-line"><span>Guests</span><span>' + guestCount + '</span></div>';
+  html += '<div class="quote-line"><span>Package</span><span>' + escHtml(pkgName) + '</span></div>';
+  if (premadeStyle) {
+    var pkgDefaultStyle = (selectedPackageIdx >= 0 && apiPackages[selectedPackageIdx] && apiPackages[selectedPackageIdx].service_style) || '';
+    var styleNote = premadeStyle === pkgDefaultStyle ? ' (package default)' : ' (requested change from ' + (pkgDefaultStyle || 'package default') + ')';
+    html += '<div class="quote-line"><span>Service Style</span><span>' + premadeStyle.charAt(0).toUpperCase() + premadeStyle.slice(1) + escHtml(styleNote) + '</span></div>';
+  }
+  if (addonCount) html += '<div class="quote-line"><span>Optional Add-ons</span><span>' + addonCount + ' item' + (addonCount > 1 ? 's' : '') + '</span></div>';
+  html += '<div class="quote-line"><span>Venue</span><span>' + venueAddr + '</span></div>';
+  if (additional) html += '<div style="font-size:12px;color:var(--slate-600);margin-top:8px;"><strong>Additional Notes:</strong> ' + escHtml(additional) + '</div>';
+  if (dietary) html += '<div style="font-size:12px;color:var(--slate-600);margin-top:4px;"><strong>Dietary Needs:</strong> ' + escHtml(dietary) + '</div>';
+  if (setup) html += '<div style="font-size:12px;color:var(--slate-600);margin-top:4px;"><strong>Setup:</strong> ' + escHtml(setup) + '</div>';
+  html += '<div style="border-top:1px solid var(--slate-200);margin-top:12px;padding-top:12px;">';
+  html += '<div class="quote-line"><span>Catering Package (' + sumGuests + ' guests)</span><span>' + sumPkg + '</span></div>';
+  if (sumAddons) html += '<div class="quote-line"><span>Add-ons</span><span>' + sumAddons + '</span></div>';
+  if (sumVenue) html += '<div class="quote-line"><span>Venue Fee</span><span>' + sumVenue + '</span></div>';
+  html += '<div class="quote-line total"><span>Estimated Total</span><span>' + sumTotal + '</span></div>';
+  html += '</div>';
+
+  document.getElementById('review-body').innerHTML = html;
+  document.getElementById('review-summary').style.display = 'block';
+  document.getElementById('btn-submit-inquiry').style.display = 'none';
+  document.getElementById('review-summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function hideReview() {
+  document.getElementById('review-summary').style.display = 'none';
+  document.getElementById('btn-submit-inquiry').style.display = '';
+}
+
+function doSubmitInquiry() {
+  var name = document.getElementById('in-name').value.trim();
+  var email = document.getElementById('in-email').value.trim();
+  var contact = document.getElementById('in-contact').value.trim();
+  var date = document.getElementById('in-date').value;
+  var time = document.getElementById('in-time').value;
+  var additional = document.getElementById('in-additional').value.trim();
+  var dietary = document.getElementById('in-dietary').value.trim();
+  var setup = document.getElementById('in-setup').value.trim();
+
+  var dtParts = date + 'T' + (time || '12:00') + ':00';
+  var notes = [additional, dietary, setup].filter(Boolean).join('\n');
+
+  var body = {
+    customer_name: name,
+    customer_contact: contact,
+    customer_email: email,
+    event_date: dtParts,
+    event_time: time || null,
+    event_type: 'Catering Event',
+    event_address: venueMode === 'own' ? (document.getElementById('in-venue-address').value.trim() || 'To be determined') : 'Venue to be assigned',
+    guest_count: pkgType === 'premade' ? (parseInt(document.getElementById('ga-guests').value, 10) || 50) : (parseInt(document.getElementById('custom-guests').value, 10) || 50),
+    catering_package_id: (selectedPackageIdx >= 0 && apiPackages[selectedPackageIdx]) ? apiPackages[selectedPackageIdx].id : null,
+    package_mode: pkgType === 'premade' ? 'default' : 'custom',
+    service_style: pkgType === 'custom' ? document.getElementById('custom-service-style').value : null,
+    food_requirements: dietary ? [{ type: 'food', description: dietary, guest_count: 50 }] : [],
+    staff: { waiter_count: 0, bartender_count: 0, chef_count: 0, kitchen_staff_count: 0, support_crew_count: 0 },
+    items: [],
+    selected_catalog_ids: pkgType === 'custom' ? getSelectedCatalogIds() : [],
+    addon_catalog_ids: pkgType === 'premade' ? getPremadeAddons() : [],
+    requested_service_style: pkgType === 'premade' ? (document.getElementById('premade-service-style').value || null) : null,
+    notes: notes || null,
+    additional_notes: additional || null,
+    dietary_notes: dietary || null,
+    setup_notes: setup || null,
+    venue_mode: venueMode,
+    selected_venue_id: venueMode === 'need' ? selectedVenueId : null,
+    venue_fee: venueMode === 'need' ? selectedVenueFee : 0
+  };
+
+  showToast('Submitting your inquiry...');
+  apiRequest('/public/inquiries', { method: 'POST', body: JSON.stringify(body) })
+    .then(function(res) {
+      if (!res.ok) {
+        var msg = 'Failed to submit inquiry.';
+        if (res.data && res.data.detail) {
+          if (typeof res.data.detail === 'string') {
+            msg = res.data.detail;
+          } else if (Array.isArray(res.data.detail)) {
+            var fieldNames = { customer_contact: 'Contact number', customer_email: 'Email', customer_name: 'Name', event_date: 'Event date', event_address: 'Event address', guest_count: 'Guest count' };
+            msg = res.data.detail.map(function(d) {
+              var fld = d.loc && d.loc.length > 1 ? (fieldNames[d.loc[1]] || d.loc[1]) : '';
+              var m = (d.msg || '').replace(/^Value error,\s*/i, '');
+              return fld ? fld + ': ' + m : m;
+            }).join('. ');
+          } else {
+            msg = JSON.stringify(res.data.detail);
+          }
+        }
+        showToast(msg, true);
+        hideReview();
+        return;
+      }
+      var ref = res.data.reference;
+      inquiryRef = ref;
+      accessToken = res.data.access_token || '';
+      sessionStorage.setItem('inquiryToken', accessToken);
+      document.getElementById('confirm-ref').textContent = ref;
+      document.getElementById('confirm-email').textContent = email;
+      showView('confirmation');
+      showToast('Inquiry submitted successfully!');
+    });
+}
+
+function copyInquiryReference() {
+  var ref = document.getElementById('confirm-ref').textContent.trim();
+  if (!ref) return;
+  var done = function() {
+    var lbl = document.getElementById('copy-ref-label');
+    var icon = document.querySelector('#copy-ref-btn i');
+    if (lbl) lbl.textContent = 'Copied!';
+    if (icon) icon.className = 'bi bi-check-lg';
+    setTimeout(function() {
+      if (lbl) lbl.textContent = 'Copy';
+      if (icon) icon.className = 'bi bi-clipboard';
+    }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ref).then(done).catch(function() { fallbackCopyRef(ref, done); });
+  } else {
+    fallbackCopyRef(ref, done);
+  }
+}
+
+function fallbackCopyRef(text, done) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) { /* clipboard unavailable */ }
+  document.body.removeChild(ta);
+}
+
+/* ===================== CHECK INQUIRY (SHARED COMPONENT) ===================== */
+/* One template + one validation function, mounted on the dedicated Check
+   Inquiry page (#cic-page). Home links here with a plain button instead of
+   embedding a second copy of the input. */
+function checkInquiryCardHtml(scope) {
+  return '<div class="card card-pad" style="margin-bottom:18px;">' +
+    '<div class="card-title"><i class="bi bi-search" style="color:var(--blue-600);"></i><h2>Check an Existing Inquiry</h2></div>' +
+    '<p style="font-size:12px;color:var(--slate-500);margin:-4px 0 10px;">Already submitted? Paste the tracking link from your email to view your status, quotation, and booking updates.</p>' +
+    '<div style="display:flex;gap:8px;">' +
+    '<input class="form-control" id="check-link-input-' + scope + '" placeholder="Paste your tracking link here" style="flex:1;" onkeydown="if(event.key===\'Enter\')checkInquiryFromLink(\'' + scope + '\')">' +
+    '<button class="btn btn-primary" onclick="checkInquiryFromLink(\'' + scope + '\')" style="white-space:nowrap;">Check Status</button>' +
+    '</div>' +
+    '<span class="error-text" id="check-link-error-' + scope + '" style="display:none;margin-top:8px;">That doesn\'t look like a valid tracking link. Copy the <strong>full link</strong> from your email — it contains both your reference and access code.</span>' +
+    '</div>';
+}
+
+function mountCheckInquiryCards() {
+  var page = document.getElementById('cic-page');
+  if (page) page.innerHTML = checkInquiryCardHtml('page');
+}
+
+function checkInquiryFromLink(scope) {
+  var input = document.getElementById('check-link-input-' + scope);
+  var err = document.getElementById('check-link-error-' + scope);
+  if (!input || !err) return;
+  var raw = (input.value || '').trim();
+  var decoded = raw.replace(/&amp;/g, '&');
+  var refMatch = decoded.match(/[?&]ref=([^&\s]+)/);
+  var tokenMatch = decoded.match(/[?&]token=([^&\s]+)/);
+  if (!refMatch || !tokenMatch) {
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+  inquiryRef = decodeURIComponent(refMatch[1]);
+  accessToken = decodeURIComponent(tokenMatch[1]);
+  sessionStorage.setItem('inquiryToken', accessToken);
+  loadStatusPage(inquiryRef);
+  goNav('status');
+}
+
+/* ===================== RESEND STATUS LINK ===================== */
+function toggleResendForm() {
+  var f = document.getElementById('resend-form');
+  var open = f.style.display === 'none';
+  f.style.display = open ? 'block' : 'none';
+}
+
+function submitResendLink() {
+  var email = (document.getElementById('resend-email').value || '').trim();
+  var msg = document.getElementById('resend-msg');
+  msg.style.display = 'block';
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    msg.textContent = 'Please enter the email address you used on your inquiry.';
+    return;
+  }
+  apiRequest('/public/inquiries/resend-link', { method: 'POST', body: JSON.stringify({ email: email }) }).then(function(res) {
+    if (res.ok && res.data && res.data.message) {
+      msg.textContent = res.data.message;
+    } else if (res.data && res.data.detail) {
+      var d = res.data.detail;
+      msg.textContent = typeof d === 'string' ? d : 'Please try again later.';
+    } else {
+      msg.textContent = 'Something went wrong. Please try again later.';
+    }
+  });
+}
+
+/* ===================== STATUS PAGE ===================== */
+var billingToken = null;
+
+function loadStatusPage(ref) {
+  showToast('Loading inquiry status...');
+  var url = '/public/inquiries/' + encodeURIComponent(ref);
+  if (accessToken) url += '?token=' + encodeURIComponent(accessToken);
+  apiRequest(url)
+    .then(function(res) {
+      if (!res.ok) {
+        showToast('Inquiry not found. Please check your reference.', true);
+        return;
+      }
+      statusData = res.data;
+      renderStatusPage(res.data);
+      showView('status');
+    });
+}
+
+function renderLifecycle(){
+  var track = document.getElementById('lifecycle-track');
+  track.innerHTML = LIFECYCLE_STEPS.map(function(label,i){
+    var cls = '';
+    if(i < currentStage) cls = 'done';
+    else if(i === currentStage) cls = 'current';
+    var icon = i < currentStage ? '<i class="bi bi-check"></i>' : (i+1);
+    return '<div class="lc-step ' + cls + '"><div class="lc-dot">' + icon + '</div><div class="lc-label">' + label + '</div></div>';
+  }).join('');
+}
+
+function renderStatusPage(data) {
+  var inq = data.inquiry || {};
+  var quot = data.quotation || null;
+  var bk = data.booking || null;
+
+  document.getElementById('st-ref').textContent = inquiryRef;
+  document.getElementById('st-name').textContent = inq.customer_name || '';
+  document.getElementById('st-guests').textContent = (inq.guest_count || 0) + ' guests';
+  document.getElementById('st-package').textContent = inq.package_name || 'Custom';
+  if (inq.event_date) {
+    document.getElementById('st-date').textContent = fmtDate(inq.event_date) + (inq.event_time ? ' \u00B7 ' + fmtTime(inq.event_time) : '');
+  }
+  document.getElementById('help-ref').textContent = inquiryRef;
+
+  if (inq.customer_email) {
+    var parts = inq.customer_email.split('@');
+    var masked = parts[0].charAt(0) + '***@' + (parts[1] || '');
+    document.getElementById('masked-email').textContent = masked;
+  }
+
+  currentStage = 0;
+  if (inq.status === 'new' || inq.status === 'submitted') currentStage = 0;
+  if (quot && quot.status === 'draft') currentStage = 1;
+  if (quot && quot.status === 'sent') currentStage = 1;
+  if (quot && quot.status === 'accepted') currentStage = 2;
+  if (bk && bk.status === 'pending') currentStage = 3;
+  if (bk && bk.status === 'confirmed') currentStage = 5;
+  if (bk && bk.status === 'in_progress') currentStage = 6;
+  if (bk && bk.status === 'completed') currentStage = 8;
+
+  var pill = document.getElementById('st-status-pill');
+  if (currentStage <= 0) { pill.className = 'pill pending'; pill.textContent = 'New'; }
+  else if (currentStage <= 2) { pill.className = 'pill progress'; pill.textContent = 'In Progress'; }
+  else if (currentStage <= 5) { pill.className = 'pill confirmed'; pill.textContent = 'Confirmed'; }
+  else { pill.className = 'pill confirmed'; pill.textContent = 'Active'; }
+
+  renderLifecycle();
+
+  var qCard = document.getElementById('quotation-card');
+  if (quot && (quot.status === 'sent' || quot.status === 'accepted')) {
+    qCard.style.display = 'block';
+    var qhtml = '<div class="card-title"><i class="bi bi-file-earmark-text" style="color:var(--blue-600);"></i><h2>Quotation</h2></div>';
+    if (quot.package_name) qhtml += '<div class="quote-line"><span>Package</span><span>' + escHtml(quot.package_name) + '</span></div>';
+    if (quot.package_description) qhtml += '<div style="font-size:12px;color:var(--slate-500);margin:-4px 0 12px;line-height:1.5;">' + escHtml(quot.package_description) + '</div>';
+    if (quot.guest_count) qhtml += '<div class="quote-line"><span>Guest Count</span><span>' + quot.guest_count + ' pax</span></div>';
+    if (quot.pricing_method) qhtml += '<div class="quote-line"><span>Pricing</span><span>' + (quot.pricing_method === 'per_guest' ? 'Per Guest' : 'Fixed Rate') + '</span></div>';
+    if (quot.service_style) {
+      var ssReq = quot.requested_service_style && quot.requested_service_style !== quot.service_style;
+      var ssTag = ssReq
+        ? '<span style="font-size:10px;font-weight:700;color:var(--amber-600);background:var(--amber-50,#fffbeb);padding:2px 8px;border-radius:4px;margin-left:6px;">Customer requested</span>'
+        : '<span style="font-size:10px;font-weight:600;color:var(--slate-500);background:var(--slate-100);padding:2px 8px;border-radius:4px;margin-left:6px;">Package default</span>';
+      qhtml += '<div class="quote-line"><span>Service Style</span><span>' + escHtml(titleCaseStr(quot.service_style)) + ssTag + '</span></div>';
+    }
+    if (quot.venue_name) qhtml += '<div class="quote-line"><span>Venue</span><span>' + escHtml(quot.venue_name) + '</span></div>';
+    if (quot.event_date) qhtml += '<div class="quote-line"><span>Event Date</span><span>' + fmtDate(quot.event_date) + (quot.event_time ? ' \u00B7 ' + fmtTime(quot.event_time) : '') + '</span></div>';
+    if (quot.valid_until) qhtml += '<div class="quote-line"><span>Valid Until</span><span>' + fmtDate(quot.valid_until) + '</span></div>';
+
+    // Itemized contents: package-included vs customer-added
+    var includedItems = (quot.items || []).filter(function(item) { return item.kind !== 'addon'; });
+    var addons = quot.addons || [];
+    var pkgLabel = quot.package_name ? ('Included in ' + quot.package_name) : 'Included in Package';
+    if (includedItems.length > 0) {
+      qhtml += '<div style="border-top:1px solid var(--slate-200);margin:12px 0 8px;padding-top:10px;font-size:12px;font-weight:600;color:var(--slate-700);">' + escHtml(pkgLabel) + '</div>';
+      includedItems.forEach(function(item) {
+        qhtml += '<div class="quote-line" style="font-size:12.5px;"><span>' + escHtml(item.name) + (item.quantity > 1 ? ' (' + item.quantity + ' ' + escHtml(item.unit) + ')' : '') + '</span><span style="color:var(--slate-400);">' + escHtml(titleCaseStr(item.category || item.kind)) + '</span></div>';
+      });
+    }
+    if (addons.length > 0) {
+      qhtml += '<div style="border-top:1px solid var(--slate-200);margin:12px 0 8px;padding-top:10px;font-size:12px;font-weight:600;color:var(--blue-700);">Add-ons</div>';
+      var TYPE_ORDER = { dish: 'Dishes', equipment: 'Equipment', staff: 'Staff' };
+      Object.keys(TYPE_ORDER).forEach(function(t) {
+        var group = addons.filter(function(a) { return (a.item_type || '') === t; });
+        if (!group.length) return;
+        qhtml += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-500);margin:6px 0 2px;">' + TYPE_ORDER[t] + '</div>';
+        group.forEach(function(a) {
+          var priceTxt = '\u20B1' + Number(a.line_total).toLocaleString() + (a.pricing_unit === 'per_guest' ? ' (' + quot.guest_count + ' pax)' : '');
+          qhtml += '<div class="quote-line" style="font-size:12.5px;"><span>' + escHtml(a.name) + (a.quantity > 1 ? ' \u00D7 ' + a.quantity : '') + '</span><span style="color:var(--slate-600);">' + priceTxt + '</span></div>';
+        });
+      });
+    } else {
+      qhtml += '<div style="border-top:1px solid var(--slate-200);margin:12px 0 8px;padding-top:10px;font-size:12px;font-weight:600;color:var(--slate-700);">Add-ons</div>';
+      qhtml += '<div style="font-size:12.5px;color:var(--slate-500);">No add-ons selected.</div>';
+    }
+    if (quot.derived_inclusions && quot.derived_inclusions.length) {
+      var DLBL = { chafing_dish: 'Chafing dishes', table: 'Buffet/round tables', server: 'Servers', setup_staff: 'Setup staff', place_setting: 'Place settings' };
+      var dparts = quot.derived_inclusions.map(function(d) {
+        var l = DLBL[d.item_key] || d.item_key.replace(/_/g, ' ');
+        return escHtml(l.charAt(0).toUpperCase() + l.slice(1)) + ' \u00D7 ' + d.quantity;
+      });
+      qhtml += '<div style="font-size:12px;color:var(--slate-600);margin:6px 0 0;">Also included per package: ' + dparts.join(' \u00B7 ') + '</div>';
+    }
+    if (quot.food_requirements && quot.food_requirements.length > 0) {
+      qhtml += '<div style="border-top:1px solid var(--slate-200);margin:12px 0 8px;padding-top:10px;font-size:12px;font-weight:600;color:var(--slate-700);">Special Requirements</div>';
+      quot.food_requirements.forEach(function(req) {
+        qhtml += '<div style="font-size:12px;color:var(--slate-600);margin-bottom:4px;">\u2022 ' + escHtml(req.description) + '</div>';
+      });
+    }
+
+    // Price breakdown: base package + each add-on + total
+    qhtml += '<div style="border-top:1px solid var(--slate-200);margin:12px 0 6px;padding-top:10px;font-size:12px;font-weight:600;color:var(--slate-700);">Price Breakdown</div>';
+    if (quot.package_base_price != null) {
+      qhtml += '<div class="quote-line" style="font-size:12.5px;"><span>' + escHtml(quot.package_name || 'Base Package') + ' (' + quot.guest_count + ' guests)</span><span>\u20B1' + Number(quot.package_base_price).toLocaleString() + '</span></div>';
+    }
+    (quot.addons || []).forEach(function(a) {
+      qhtml += '<div class="quote-line" style="font-size:12.5px;"><span>Add-on: ' + escHtml(a.name) + (a.quantity > 1 ? ' \u00D7 ' + a.quantity : '') + '</span><span>\u20B1' + Number(a.line_total).toLocaleString() + '</span></div>';
+    });
+    qhtml += '<div class="quote-line total" style="border-top:1px solid var(--slate-200);margin-top:12px;padding-top:12px;"><span>Total Quotation</span><span>\u20B1' + Number(quot.total_price || 0).toLocaleString() + '</span></div>';
+    if (quot.status === 'accepted') {
+      qhtml += '<div style="display:flex;gap:8px;margin-top:16px;"><span class="pill confirmed" style="padding:8px 16px;">Quotation Accepted</span></div>';
+    } else {
+      qhtml += '<div style="display:flex;gap:8px;margin-top:16px;" id="quotation-actions">';
+      qhtml += '<button class="btn btn-danger-outline btn-sm" style="flex:1" onclick="rejectQuotation()">Decline</button>';
+      qhtml += '<button class="btn btn-primary btn-sm" style="flex:1" onclick="acceptQuotation()">Accept Quotation</button></div>';
+    }
+    qCard.innerHTML = qhtml;
+  } else {
+    qCard.style.display = 'none';
+  }
+
+  if (bk && bk.coordinator_name) {
+    document.getElementById('coordinator-card').style.display = 'block';
+    document.getElementById('coord-name').textContent = bk.coordinator_name;
+    document.getElementById('coord-venue').textContent = inq.event_address || '';
+    document.getElementById('coord-contact').textContent = bk.coordinator_contact || '';
+  } else {
+    document.getElementById('coordinator-card').style.display = 'none';
+  }
+
+  updateCancellationArea();
+}
+
+function acceptQuotation() {
+  if (!inquiryRef || !statusData || !statusData.quotation) return;
+  var qref = statusData.quotation.reference;
+  var version = statusData.quotation.updated_at || null;
+  showToast('Accepting quotation...');
+  var body = {};
+  if (version) body.version = version;
+  var url = '/public/inquiries/' + encodeURIComponent(inquiryRef) + '/quotations/' + encodeURIComponent(qref) + '/accept';
+  if (accessToken) url += '?token=' + encodeURIComponent(accessToken);
+  apiRequest(url, { method: 'POST', body: JSON.stringify(body) })
+    .then(function(res) {
+      if (res.status === 409) {
+        showToast('Quotation has been updated by the admin. Refreshing...', true);
+        loadStatusPage(inquiryRef);
+        return;
+      }
+      if (!res.ok) { showToast('Failed to accept quotation.', true); return; }
+      showToast('Quotation accepted! Booking created.');
+      loadStatusPage(inquiryRef);
+      setTimeout(function() { openModal('accepted-next'); }, 1500);
+    });
+}
+
+function rejectQuotation() {
+  if (!inquiryRef || !statusData || !statusData.quotation) return;
+  var qref = statusData.quotation.reference;
+  var url = '/public/inquiries/' + encodeURIComponent(inquiryRef) + '/quotations/' + encodeURIComponent(qref) + '/reject';
+  if (accessToken) url += '?token=' + encodeURIComponent(accessToken);
+  apiRequest(url, { method: 'POST' })
+    .then(function(res) {
+      if (!res.ok) { showToast('Failed to decline quotation.', true); return; }
+      showToast('Quotation declined.');
+      loadStatusPage(inquiryRef);
+    });
+}
+
+/* ===================== OTP + BILLING ===================== */
+function requestOtp() {
+  showToast('Sending verification code...');
+  apiRequest('/public/inquiries/' + encodeURIComponent(inquiryRef) + '/billing/request-code', { method: 'POST' })
+    .then(function(res) {
+      if (!res.ok) {
+        var msg = 'Failed to send code.';
+        if (res.data && res.data.detail) msg = typeof res.data.detail === 'string' ? res.data.detail : JSON.stringify(res.data.detail);
+        showToast(msg, true);
+        return;
+      }
+      document.getElementById('otp-section').style.display = 'block';
+      showToast('Verification code sent to your email.');
+      document.querySelectorAll('.otp-digit')[0].focus();
+    });
+}
+
+document.addEventListener('input', function(e){
+  if(e.target.classList.contains('otp-digit')){
+    var digits = Array.from(document.querySelectorAll('.otp-digit'));
+    var idx = digits.indexOf(e.target);
+    if(e.target.value && idx < digits.length-1) digits[idx+1].focus();
+  }
+});
+
+function verifyOtp() {
+  var code = Array.from(document.querySelectorAll('.otp-digit')).map(function(i) { return i.value; }).join('');
+  if (code.length !== 6) { showToast('Please enter all 6 digits.', true); return; }
+  apiRequest('/public/inquiries/' + encodeURIComponent(inquiryRef) + '/billing/verify?code=' + encodeURIComponent(code), { method: 'POST' })
+    .then(function(res) {
+      if (!res.ok) {
+        showToast('Invalid or expired code.', true);
+        return;
+      }
+      billingToken = res.data.token;
+      document.getElementById('billing-locked').style.display = 'none';
+      document.getElementById('billing-unlocked').style.display = 'block';
+      loadBillingData();
+      selectPayMethod('gcash');
+      showToast('Billing unlocked.');
+    });
+}
+
+function loadBillingData() {
+  if (!billingToken || !inquiryRef) return;
+  apiRequest('/public/inquiries/' + encodeURIComponent(inquiryRef) + '/billing?token=' + encodeURIComponent(billingToken))
+    .then(function(res) {
+      if (!res.ok) { showToast('Failed to load billing data.', true); return; }
+      var d = res.data;
+      var html = '<div class="quote-line"><span>Total Amount</span><span>\u20B1' + Number(d.total_amount || 0).toLocaleString() + '</span></div>';
+      html += '<div class="quote-line"><span>Amount Paid</span><span>\u20B1' + Number(d.amount_paid || 0).toLocaleString() + '</span></div>';
+      html += '<div class="quote-line total"><span>Remaining Balance</span><span>\u20B1' + Number(d.remaining_balance || 0).toLocaleString() + '</span></div>';
+      html += '<div class="quote-line"><span>Payment Status</span><span><span class="pill ' + (d.payment_status === 'paid' ? 'confirmed' : 'pending') + '">' + titleCaseStr(d.payment_status || 'unpaid') + '</span></span></div>';
+
+      if (d.remaining_balance > 0) {
+        html += '<div style="margin-top:18px;"><div class="card-title" style="margin-bottom:10px;"><h2 style="font-size:13px;">Choose Payment Method</h2></div>';
+        html += '<div class="pay-method-grid">';
+        html += '<div class="pay-method active" data-method="gcash" onclick="selectPayMethod(\'gcash\')"><i class="bi bi-phone"></i><span>GCash</span></div>';
+        html += '<div class="pay-method" data-method="maya" onclick="selectPayMethod(\'maya\')"><i class="bi bi-wallet2"></i><span>Maya</span></div>';
+        html += '<div class="pay-method" data-method="bank_transfer" onclick="selectPayMethod(\'bank_transfer\')"><i class="bi bi-bank"></i><span>Bank Transfer</span></div>';
+        html += '<div class="pay-method" data-method="cash" onclick="selectPayMethod(\'cash\')"><i class="bi bi-cash"></i><span>Cash / On-site</span></div>';
+        html += '</div>';
+        html += '<div class="pay-instructions" id="pay-instructions"></div>';
+        html += '<div class="form-grid">';
+        html += '<div class="form-group"><label>Payment Amount</label><input class="form-control" id="pay-amount" type="number" placeholder="e.g. ' + d.remaining_balance + '"></div>';
+        html += '<div class="form-group"><label>Payment Date</label><input type="date" class="form-control" id="pay-date"></div>';
+        html += '<div class="form-group"><label>Transaction / Reference No.</label><input class="form-control" id="pay-ref" placeholder="e.g. 0912345678"></div>';
+        html += '<div class="form-group"><label>Notes <span class="hint">(optional)</span></label><input class="form-control" id="pay-notes" placeholder="Any notes"></div>';
+        html += '<div class="form-group" style="margin-top:4px;"><label>Proof of Payment <span class="hint">(JPG, PNG, or PDF &middot; max 5 MB)</span></label>';
+        html += '<input type="file" class="form-control" id="pay-proof" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" onchange="proofSelected(this)" style="padding:8px;font-size:12px;">';
+        html += '<div id="pay-proof-preview" style="display:none;margin-top:8px;"></div></div>';
+        html += '</div>';
+        html += '<button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="submitPayment()"><i class="bi bi-upload"></i> Submit Payment for Verification</button>';
+        html += '</div>';
+      }
+
+      html += '<div style="margin-top:20px;"><div class="card-title" style="margin-bottom:10px;"><h2 style="font-size:13px;">Payment History</h2></div>';
+      html += '<table><thead><tr><th>Date</th><th>Reference</th><th>Method</th><th>Amount</th><th>Status</th><th>Proof</th></tr></thead>';
+      html += '<tbody id="payment-history-body"><tr><td colspan="6" style="text-align:center;color:var(--slate-400);">Loading...</td></tr></tbody></table></div>';
+
+      document.getElementById('billing-unlocked').innerHTML = html;
+      selectPayMethod('gcash');
+      loadPaymentHistory();
+    });
+}
+
+function selectPayMethod(method) {
+  selectedPayMethod = method;
+  document.querySelectorAll('.pay-method').forEach(function(el) { el.classList.toggle('active', el.dataset.method === method); });
+  var box = document.getElementById('pay-instructions');
+  if (!box) return;
+  var demo = '<span class="demo-tag">PAYMENT DETAILS</span><br>';
+  if (method === 'gcash') {
+    box.innerHTML = demo + '<div class="li"><span>Account Name</span><strong>ARGO Catering</strong></div><div class="li"><span>GCash Number</span><strong>0917-XXX-XXXX</strong></div>';
+  } else if (method === 'maya') {
+    box.innerHTML = demo + '<div class="li"><span>Account Name</span><strong>ARGO Catering</strong></div><div class="li"><span>Maya Number</span><strong>0917-XXX-XXXX</strong></div>';
+  } else if (method === 'bank_transfer') {
+    box.innerHTML = demo + '<div class="li"><span>Bank</span><strong>BDO</strong></div><div class="li"><span>Account Name</span><strong>ARGO Catering</strong></div><div class="li"><span>Account Number</span><strong>XXXX-XXXX-XXXX</strong></div>';
+  } else {
+    box.innerHTML = demo + '<div class="li"><span>Payment</span><strong>Payable directly to staff on event day</strong></div>';
+  }
+}
+
+function proofSelected(input) {
+  selectedProofFile = null;
+  var box = document.getElementById('pay-proof-preview');
+  box.style.display = 'none';
+  box.innerHTML = '';
+  if (!input.files || !input.files.length) return;
+  var f = input.files[0];
+  var okTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+  if (okTypes.indexOf(f.type) === -1) {
+    showToast('Only JPG, PNG, or PDF files are accepted.', true);
+    input.value = '';
+    return;
+  }
+  if (f.size > 5 * 1024 * 1024) {
+    showToast('File is too large. Maximum size is 5 MB.', true);
+    input.value = '';
+    return;
+  }
+  selectedProofFile = f;
+  var html;
+  if (f.type === 'application/pdf') {
+    html = '<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--slate-600);"><i class="bi bi-file-earmark-pdf" style="font-size:20px;color:#dc2626;"></i><span>' + escHtml(f.name) + '</span></div>';
+  } else {
+    html = '<img src="' + URL.createObjectURL(f) + '" alt="proof preview" style="max-height:90px;border-radius:6px;border:1px solid var(--slate-200);">';
+  }
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+
+function uploadProofPayment(paymentId, file, btnEl) {
+  var fd = new FormData();
+  fd.append('file', file);
+  var url = API_BASE + '/public/inquiries/' + encodeURIComponent(inquiryRef)
+    + '/upload-proof?token=' + encodeURIComponent(billingToken)
+    + '&payment_id=' + encodeURIComponent(paymentId);
+  return fetch(url, { method: 'POST', body: fd })
+    .then(function(res) {
+      return res.json().catch(function() { return null; }).then(function(data) {
+        return { ok: res.ok, data: data };
+      });
+    })
+    .then(function(res) {
+      if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Retry Upload'; }
+      if (!res.ok) {
+        var msg = (res.data && typeof res.data.detail === 'string') ? res.data.detail : 'The proof file could not be uploaded.';
+        showProofRetryNotice(msg);
+        return false;
+      }
+      hideProofRetryNotice();
+      return true;
+    })
+    .catch(function() {
+      if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Retry Upload'; }
+      showProofRetryNotice('Connection problem - the proof file did not upload.');
+      return false;
+    });
+}
+
+function showProofRetryNotice(reason) {
+  hideProofRetryNotice();
+  var host = document.getElementById('billing-unlocked');
+  if (!host) return;
+  var div = document.createElement('div');
+  div.id = 'proof-retry-notice';
+  div.style.cssText = 'margin-top:12px;padding:12px 14px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;font-size:12.5px;color:#92400e;';
+  div.innerHTML = '<strong><i class="bi bi-exclamation-triangle"></i> Your payment was recorded, but the proof did not attach.</strong><br>'
+    + escHtml(reason) + ' Your amount, date, and method are safe.<br>';
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-primary';
+  btn.style.marginTop = '8px';
+  btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Retry Upload';
+  btn.onclick = function() {
+    if (!lastSubmittedPaymentId || !selectedProofFile) { showToast('Please re-select your proof file and retry.', true); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Uploading...';
+    uploadProofPayment(lastSubmittedPaymentId, selectedProofFile, btn).then(function(ok) {
+      if (ok) { showToast('Proof attached successfully.'); loadBillingData(); }
+    });
+  };
+  div.appendChild(btn);
+  host.insertBefore(div, host.firstChild);
+}
+
+function hideProofRetryNotice() {
+  var old = document.getElementById('proof-retry-notice');
+  if (old) old.remove();
+}
+
+function submitPayment() {
+  if (!inquiryRef || !billingToken) return;
+  var amt = document.getElementById('pay-amount').value.trim();
+  var pdate = document.getElementById('pay-date').value;
+  var pref = document.getElementById('pay-ref').value.trim();
+  var pnotes = document.getElementById('pay-notes') ? document.getElementById('pay-notes').value.trim() : '';
+
+  if (!amt || Number(amt) <= 0) { showToast('Please enter a valid payment amount.', true); return; }
+
+  var body = {
+    method: selectedPayMethod,
+    amount: Number(amt),
+    payment_date: pdate || new Date().toISOString().slice(0, 10),
+    customer_reference: pref || null,
+    notes: pnotes || null
+  };
+
+  showToast('Submitting payment...');
+  apiRequest('/public/inquiries/' + encodeURIComponent(inquiryRef) + '/payments?token=' + encodeURIComponent(billingToken), { method: 'POST', body: JSON.stringify(body) })
+    .then(function(res) {
+      if (!res.ok) {
+        showToast('Failed to submit payment.', true);
+        return;
+      }
+      var payId = res.data && res.data.id ? res.data.id : null;
+      lastSubmittedPaymentId = payId;
+      if (payId && selectedProofFile) {
+        showToast('Payment recorded. Uploading proof...');
+        uploadProofPayment(payId, selectedProofFile).then(function(ok) {
+          if (ok) { showToast('Payment submitted with proof! Awaiting verification.'); }
+          loadBillingData();
+        });
+      } else {
+        showToast('Payment submitted! Awaiting verification.');
+        loadBillingData();
+      }
+    });
+}
+
+function loadPaymentHistory() {
+  if (!billingToken || !inquiryRef) return;
+  apiRequest('/public/inquiries/' + encodeURIComponent(inquiryRef) + '/payments?token=' + encodeURIComponent(billingToken))
+    .then(function(res) {
+      var tbody = document.getElementById('payment-history-body');
+      if (!res.ok || !res.data || !res.data.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--slate-400);">No payments yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = res.data.map(function(p) {
+        var statusPill = p.verified ? '<span class="pill confirmed">Verified</span>' : '<span class="pill pending">Pending</span>';
+        var proofIcon = p.proof_url
+          ? '<a href="' + API_BASE + escHtml(p.proof_url) + '" target="_blank" title="View proof of payment"><i class="bi bi-paperclip"></i></a>'
+          : '<span style="color:var(--slate-300);">\u2014</span>';
+        return '<tr><td>' + escHtml(fmtDate(p.payment_date)) + '</td><td>' + escHtml(p.customer_reference || '\u2014') + '</td><td>' + escHtml(titleCaseStr(p.method)) + '</td><td>\u20B1' + Number(p.amount).toLocaleString() + '</td><td>' + statusPill + '</td><td style="text-align:center;">' + proofIcon + '</td></tr>';
+      }).join('');
+    });
+}
+
+/* ===================== CANCELLATION ===================== */
+function updateCancellationArea() {
+  var area = document.getElementById('cancellation-area');
+  if (currentStage <= 0) {
+    area.innerHTML = '<p style="font-size:12.5px;color:var(--slate-600);">If you have not made any payment yet, you may cancel this inquiry.</p><button class="btn btn-danger-outline" onclick="cancelInquiry()">Cancel Inquiry</button>';
+  } else {
+    area.innerHTML = '<p style="font-size:12.5px;color:var(--slate-600);">Cancellation at this stage requires staff review.</p><button class="btn btn-danger-outline" onclick="requestCancellation()">Request Cancellation</button>';
+  }
+}
+
+function cancelInquiry() {
+  if (!inquiryRef) return;
+  var url = '/public/inquiries/' + encodeURIComponent(inquiryRef) + '/cancel';
+  if (accessToken) url += '?token=' + encodeURIComponent(accessToken);
+  apiRequest(url, { method: 'POST', body: JSON.stringify({ reason: 'Customer requested cancellation' }) })
+    .then(function(res) {
+      if (!res.ok) { showToast('Failed to cancel inquiry.', true); return; }
+      showToast('Inquiry cancelled.');
+      document.getElementById('cancellation-area').innerHTML = '<span class="pill cancelled">Inquiry Cancelled</span>';
+    });
+}
+
+function requestCancellation() {
+  if (!inquiryRef) return;
+  var url = '/public/inquiries/' + encodeURIComponent(inquiryRef) + '/booking/cancel-request';
+  if (accessToken) url += '?token=' + encodeURIComponent(accessToken);
+  apiRequest(url, { method: 'POST', body: JSON.stringify({ reason: 'Customer requested cancellation' }) })
+    .then(function(res) {
+      if (!res.ok) { showToast('Failed to submit cancellation request.', true); return; }
+      showToast('Cancellation request submitted. Our staff will review and contact you.');
+      document.getElementById('cancellation-area').innerHTML = '<span class="pill pending">Cancellation Request Submitted</span>';
+    });
+}
+
+/* ===================== MODALS ===================== */
+function openModal(id){ document.getElementById('modal-'+id).classList.add('active'); }
+function closeModal(id){ document.getElementById('modal-'+id).classList.remove('active'); }
+document.querySelectorAll('.modal-backdrop').forEach(function(m){
+  m.addEventListener('click', function(e){ if(e.target===m) m.classList.remove('active'); });
+});
+
+/* ===================== INIT ===================== */
+renderPackageGrid();
+renderCustomOptions();
+document.getElementById('ga-guests').value = 50;
+mountCheckInquiryCards();
+
+/* Auto-load status page from emailed link (?ref=INQ-xxx&token=xxx) */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var refParam = params.get('ref');
+  var tokenParam = params.get('token');
+  if (refParam && tokenParam) {
+    inquiryRef = refParam;
+    accessToken = tokenParam;
+    sessionStorage.setItem('inquiryToken', tokenParam);
+    loadStatusPage(refParam);
+    goNav('status');
+  }
+})();
+</script>
+
+</body>
+</html>
