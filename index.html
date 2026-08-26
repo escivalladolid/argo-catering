@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <style>
   :root{
     --bg: #0a1638;
@@ -80,7 +79,7 @@
     max-width:560px;
   }
 
-  /* icon badge — swap the inline SVG for your admin-portal icon asset */
+  /* icon badge */
   .badge{
     width:84px; height:84px;
     border-radius:22px;
@@ -190,32 +189,28 @@
     animation: rise-in 0.6s ease-out 1.2s forwards;
   }
 
-  .portal-links{
+  .staff-link{
     position:fixed;
     top: 22px;
     right: 24px;
-    display:flex;
-    gap: 12px;
-    z-index: 3;
-    opacity:0;
-    animation: rise-in 0.6s ease-out 1.1s forwards;
-  }
-  .portal-links a{
     font-size: 13px;
     font-weight: 500;
     color: var(--ink-soft);
     text-decoration: none;
     letter-spacing: 0.01em;
+    z-index: 3;
+    opacity:0;
+    animation: rise-in 0.6s ease-out 1.1s forwards;
     transition: color 0.18s ease;
   }
-  .portal-links a:hover{ color: var(--blue); }
+  .staff-link:hover{ color: var(--blue); }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
     .rings span{ display:none; }
   }
 
-  /* tap ripple, spawned at the pointer position */
+  /* tap ripple */
   .tap-ring{
     position:fixed;
     width:16px; height:16px;
@@ -237,6 +232,8 @@
   @media (max-width: 480px){
     body{ padding: 96px 20px 84px; }
 
+    .staff-link{ top: 18px; right: 18px; font-size: 12px; }
+
     .badge{ width: 68px; height: 68px; border-radius: 18px; }
     .badge svg{ width: 36px; height: 36px; }
 
@@ -246,9 +243,6 @@
 
     .actions{ width: 100%; }
     .btn{ width: 100%; justify-content:center; padding: 14px 22px; }
-
-    .portal-links{ top: 18px; right: 18px; gap: 8px; }
-    .portal-links a{ font-size: 12px; }
 
     footer{ font-size: 11px; padding: 0 20px; text-align:center; }
   }
@@ -268,10 +262,7 @@
 
   <div class="rings"><span></span><span></span><span></span></div>
 
-  <div class="portal-links">
-    <a href="/customer">Customer Portal</a>
-    <a href="/admin">Admin Portal</a>
-  </div>
+  <a href="/admin" class="staff-link">Staff Login</a>
 
   <main>
     <div class="badge">
@@ -290,8 +281,7 @@
     <p class="quote">Every great event starts with the right plan on the table.</p>
 
     <div class="actions">
-      <a href="/customer" class="btn btn-primary">Customer Portal</a>
-      <a href="/admin" class="btn btn-ghost">Admin Portal</a>
+      <a href="/customer" class="btn btn-primary">Get Started</a>
     </div>
   </main>
 
@@ -302,7 +292,7 @@
 
     document.body.addEventListener('pointerdown', function(e){
       if (reduceMotion) return;
-      if (e.target.closest('.btn') || e.target.closest('.portal-links a')) return;
+      if (e.target.closest('.btn') || e.target.closest('.staff-link')) return;
 
       var ring = document.createElement('div');
       ring.className = 'tap-ring';
