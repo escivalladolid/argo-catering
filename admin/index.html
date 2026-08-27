@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
 <script>
-  if (typeof VITE_API_BASE === 'undefined') {
-      console.error('VITE_API_BASE is not set. Set VITE_API_BASE environment variable in Vercel.');
-    }
-  window.API_BASE = VITE_API_BASE;
+  window.API_BASE = 'https://catering-backend-6a4j.onrender.com';
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -335,11 +332,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 <script>
 /* ============ API LAYER ============ */
-// Use VITE_API_BASE from Vercel env (required)
-if (typeof VITE_API_BASE === 'undefined') {
-  console.error('VITE_API_BASE is not set. Set VITE_API_BASE environment variable in Vercel.');
-}
-const API_BASE = VITE_API_BASE;
+const API_BASE = 'https://catering-backend-6a4j.onrender.com';
 
 let authToken = localStorage.getItem('catering_token') || null;
 let currentUser = null;
