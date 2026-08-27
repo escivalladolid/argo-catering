@@ -39,28 +39,14 @@ class EmailService:
         return {
             "Authorization": f"Bearer {self._resend_key}",
             "Content-Type": "application/json",
+            "User-Agent": "ARGO-Catering/1.0",
         }
 
     def _ensure_audience(self) -> str | None:
         if self._audience_id:
             return self._audience_id
-        if not self._resend_key:
-            return None
-        try:
-            req = urllib.request.Request(
-                RESEND_CONTACTS_URL,
-                headers=self._resend_headers(),
-                method="GET",
-            )
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                data = json.loads(resp.read().decode())
-                audiences = data.get("data", [])
-                if audiences:
-                    self._audience_id = audiences[0]["id"]
-                    return self._audience_id
-        except Exception:
-            logger.warning("Could not fetch Resend audiences", exc_info=True)
-        return None
+        self._audience_id = "9f344cee-c4ef-4744-82e8-309fe5659177"
+        return self._audience_id
 
     def _ensure_contact(self, email: str) -> None:
         audience_id = self._ensure_audience()
