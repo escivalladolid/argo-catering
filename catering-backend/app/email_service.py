@@ -42,10 +42,15 @@ class EmailService:
         msg.add_alternative(html, subtype="html")
 
         context = ssl.create_default_context()
-        with smtplib.SMTP(self._host, self._port, timeout=15) as server:
-            server.starttls(context=context)
-            server.login(self._username, self._password)
-            server.send_message(msg)
+        if self._port == 465:
+            with smtplib.SMTP_SSL(self._host, self._port, timeout=15, context=context) as server:
+                server.login(self._username, self._password)
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(self._host, self._port, timeout=15) as server:
+                server.starttls(context=context)
+                server.login(self._username, self._password)
+                server.send_message(msg)
 
     def _send_background(self, to: str, subject: str, html: str, text: str | None = None) -> None:
         def _run():
