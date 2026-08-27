@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -30,6 +31,8 @@ from app.config import get_settings
 from app.email_service import EmailService
 import app.email_service as _email_svc_mod
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="Catering Management System",
     description="Backend API for the Catering Management module",
@@ -49,6 +52,42 @@ app.add_middleware(
 )
 
 _email_svc_mod.email_service = EmailService(settings)
+
+
+@app.on_event("startup")
+def _run_startup():
+    """Run Alembic migrations and seed data on every server start."""
+    import subprocess
+    import sys
+
+    try:
+        logger.info("Running Alembic migrations...")
+        result = subprocess.run(
+            [sys.executable, "-m", "alembic", "upgrade", "head"],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if result.returncode == 0:
+            logger.info("Migrations completed successfully.")
+        else:
+            logger.error("Migrations failed: %s", result.stderr)
+    except Exception as e:
+        logger.error("Migration error: %s", e)
+
+    try:
+        logger.info("Seeding database...")
+        result = subprocess.run(
+            [sys.executable, "seed.py"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        logger.info("Seed output: %s", result.stdout)
+        if result.returncode != 0:
+            logger.error("Seed errors: %s", result.stderr)
+    except Exception as e:
+        logger.error("Seed error: %s", e)
 
 app.include_router(auth_router.router)
 app.include_router(packages.router)
