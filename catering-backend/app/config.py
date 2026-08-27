@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_FROM_NAME: str = "ARGO Catering"
 
+    # Resend API (used instead of SMTP on Render free tier)
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "ARGO Catering <onboarding@resend.dev>"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
