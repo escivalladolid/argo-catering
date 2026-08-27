@@ -49,9 +49,13 @@ class EmailService:
             },
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            if resp.status not in (200, 201):
-                raise RuntimeError(f"Resend returned {resp.status}")
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                logger.info("Resend OK: %s", resp.read().decode())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode() if e.fp else ""
+            logger.error("Resend %s: %s", e.code, body)
+            raise RuntimeError(f"Resend {e.code}: {body}") from e
 
     def _send_via_smtp(self, to: str, subject: str, html: str, text: str | None = None) -> None:
         msg = EmailMessage()
