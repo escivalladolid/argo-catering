@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
 <script>
-  if (typeof VITE_API_BASE === 'undefined') {
-      console.error('VITE_API_BASE is not set. Set VITE_API_BASE environment variable in Vercel.');
-    }
-  window.API_BASE = VITE_API_BASE;
+  window.API_BASE = (typeof VITE_API_BASE !== 'undefined' && VITE_API_BASE) ? VITE_API_BASE : 'https://catering-backend-6a4j.onrender.com';
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -283,6 +280,16 @@
     .lc-step{min-width:72px;}
     .lc-label{font-size:8.5px;}
     .help-row{flex-direction:column;gap:10px;}
+    .card-pad{padding:16px 14px;}
+    .summary-card{padding:16px;}
+    .otp-inputs input{width:38px;height:44px;font-size:16px;}
+    .modal{max-width:100%;border-radius:14px 14px 0 0;align-self:flex-end;max-height:90vh;}
+    .modal-backdrop{align-items:flex-end;padding:0;}
+    table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .quote-line{font-size:11.5px;}
+    .quote-line.total{font-size:14px;}
+    .hero h1{font-size:19px;}
+    .hero p{font-size:12.5px;}
   }
 </style>
 </head>

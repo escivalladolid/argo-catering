@@ -257,6 +257,33 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .btn-primary.loading .login-loading{display:inline;}
 .btn-primary.loading .login-text{display:none;}
 
+.frame.mobile .tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;width:100%;gap:2px;padding:4px;background:#fff;border:1px solid var(--gray-200);border-radius:10px;margin-bottom:14px;}
+.frame.mobile .tab{flex-shrink:0;padding:7px 11px;font-size:12px;}
+.frame.mobile .detail-card{padding:14px;}
+.frame.mobile .detail-card table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.frame.mobile .modal-overlay{align-items:flex-end;}
+.frame.mobile .modal{width:100%;max-width:100%;max-height:92vh;border-radius:14px 14px 0 0;}
+.frame.mobile .modal-body{max-height:70vh;}
+.frame.mobile .filter-bar{display:flex;flex-wrap:wrap;gap:8px;}
+.frame.mobile .filter-bar select,.frame.mobile .filter-bar input{min-width:0;flex:1 1 120px;}
+.frame.mobile .search-wrap{min-width:0;flex:1 1 100%;}
+.frame.mobile .search-wrap input{width:100%;}
+.frame.mobile .topheader{padding:0 12px;gap:8px;}
+.frame.mobile .header-right{gap:10px;}
+.frame.mobile .page-title{font-size:17px;}
+.frame.mobile .field-ro div{font-size:13px;}
+.frame.mobile .field-ro div input,.frame.mobile .field-ro div textarea{width:100%!important;max-width:100%!important;}
+.frame.mobile .pkg-grid-mobile{grid-template-columns:1fr;}
+.frame.mobile .booking-detail-actions{flex-wrap:wrap;}
+.frame.mobile .booking-detail-actions .btn{flex:1;justify-content:center;}
+
+@apply-mobile-table-cards table{display:none;}
+@apply-mobile-table-cards .mobile-table-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:12px;margin-bottom:8px;}
+@apply-mobile-table-cards .mobile-table-card .mtc-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:4px;}
+@apply-mobile-table-cards .mobile-table-card .mtc-row:last-child{margin-bottom:0;}
+@apply-mobile-table-cards .mobile-table-card .mtc-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.03em;}
+@apply-mobile-table-cards .mobile-table-card .mtc-actions{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--gray-100);}
+
 @media (max-width:760px){
   .login-overlay{padding:0;}
   .login-split{max-width:100%;height:100%;border-radius:0;}
@@ -1393,7 +1420,7 @@ function renderNotificationBar(){
   const chips = [];
   if(pay) chips.push(`<span style="cursor:pointer;padding:4px 10px;border-radius:6px;background:var(--amber-50);color:var(--amber-700);font-size:12.5px;font-weight:600;" onclick="goTo('payments');setTimeout(()=>filterPaymentsByStatus('pending'),200)"><i class="bi bi-receipt"></i> ${pay} payment${pay>1?'s':''} awaiting verification</span>`);
   if(req) chips.push(`<span style="cursor:pointer;padding:4px 10px;border-radius:6px;background:var(--rose-50);color:var(--rose-700);font-size:12.5px;font-weight:600;" onclick="goTo('requirements')"><i class="bi bi-list-check"></i> ${req} requirement${req>1?'s':''} overdue/due</span>`);
-  el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:6px 14px;background:var(--slate-50);border-bottom:1px solid var(--slate-100);min-height:32px;">
+  el.innerHTML = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 14px;background:var(--slate-50);border-bottom:1px solid var(--slate-100);min-height:32px;">
     <i class="bi bi-bell" style="color:var(--amber-600);font-size:14px;"></i>
     <span style="font-size:12px;color:var(--slate-500);font-weight:500;">Notifications:</span>
     ${chips.join('<span style="color:var(--slate-300);font-size:12px;">|</span>')}
@@ -1711,8 +1738,8 @@ function pageBookingDetail(){
       <div class="field-ro"><label>Event location</label><div style="white-space:pre-line;">${raw.event_location ? esc(raw.event_location) : 'TBD'}</div></div>
       <div class="field-ro"><label>Package</label><div>${b.pkg}</div></div>
       ${raw.event_duration_hours ? `<div class="field-ro"><label>Event duration</label><div>${raw.event_duration_hours} hours</div></div>` : ''}
-      <div class="field-ro"><label>Coordinator</label><div><input id="bk-coord-name" value="${esc(raw.coordinator_name || '')}" placeholder="Not set" style="font-size:12px;padding:4px 8px;border:1px solid var(--slate-300);border-radius:6px;width:180px;" onblur="saveBkCoordinator()"></div></div>
-      <div class="field-ro"><label>Coordinator contact</label><div><input id="bk-coord-contact" value="${esc(raw.coordinator_contact || '')}" placeholder="Not set" style="font-size:12px;padding:4px 8px;border:1px solid var(--slate-300);border-radius:6px;width:180px;" onblur="saveBkCoordinator()"></div></div>
+      <div class="field-ro"><label>Coordinator</label><div><input id="bk-coord-name" value="${esc(raw.coordinator_name || '')}" placeholder="Not set" style="font-size:12px;padding:4px 8px;border:1px solid var(--slate-300);border-radius:6px;max-width:240px;width:100%;" onblur="saveBkCoordinator()"></div></div>
+      <div class="field-ro"><label>Coordinator contact</label><div><input id="bk-coord-contact" value="${esc(raw.coordinator_contact || '')}" placeholder="Not set" style="font-size:12px;padding:4px 8px;border:1px solid var(--slate-300);border-radius:6px;max-width:240px;width:100%;" onblur="saveBkCoordinator()"></div></div>
     </div>`
     + (hasVenueDetail ? `<div class="section-title" style="font-size:13px;margin:14px 0 6px;">Venue Details</div><div class="field-grid">
       ${raw.venue_name ? `<div class="field-ro"><label>Venue name</label><div>${esc(raw.venue_name)}</div></div>` : ''}
@@ -1765,6 +1792,16 @@ function pageBookingDetail(){
       const shift = fmtDateTime(r.shift_start) + (r.shift_end ? ' → ' + fmtDateTime(r.shift_end) : '');
       return `<tr><td><b>${esc(sName)}</b></td><td>${sRole!=='—'?badge(staffRoleBadge,sRole):'—'}</td><td class="muted">${shift}</td><td class="muted">${esc(r.notes||'')}</td></tr>`;
     }).join('');
+    const assignCards = stAssigns.map(r => {
+      const sName = r.staff_name || (staffMap[r.staff_id] ? staffMap[r.staff_id].name : '—');
+      const sRole = r.role ? titleCase(r.role) : '—';
+      const shift = fmtDateTime(r.shift_start) + (r.shift_end ? ' → ' + fmtDateTime(r.shift_end) : '');
+      return `<div class="mobile-table-card"><div class="mtc-row"><span class="mtc-label">Staff</span><b>${esc(sName)}</b></div><div class="mtc-row"><span class="mtc-label">Role</span>${sRole!=='—'?badge(staffRoleBadge,sRole):'—'}</div><div class="mtc-row"><span class="mtc-label">Shift</span><span style="font-size:12px;color:var(--gray-500);">${shift}</span></div>${r.notes?`<div class="mtc-row"><span class="mtc-label">Notes</span><span style="font-size:12px;color:var(--gray-500);">${esc(r.notes)}</span></div>`:''}</div>`;
+    }).join('');
+    const isMob = state.viewport === 'mobile';
+    const staffHtml = isMob
+      ? assignCards
+      : (assignRows ? `<table><thead><tr><th>Staff</th><th>Role</th><th>Shift</th><th>Notes</th></tr></thead><tbody>${assignRows}</tbody></table>` : '');
     body = `
 ${staffChips ? `<div style="margin-bottom:14px;"><div class="section-title" style="font-size:13px;margin-bottom:6px;">Staffing request</div><div>${staffChips}</div></div>` : ''}
     <div id="requested-staff-section" style="margin-top:10px;"></div>
@@ -1773,7 +1810,7 @@ ${staffChips ? `<div style="margin-bottom:14px;"><div class="section-title" styl
         <div class="section-title" style="font-size:13px;margin:0;">Assigned staff</div>
         ${hasPerm('staff_assignment:create') ? `<button class="btn btn-secondary btn-sm" onclick="openModule('staff-assignments','create',null,{booking_id:'${b.id}'})"><i class="bi bi-plus-lg"></i>Assign staff</button>` : ''}
       </div>
-      ${assignRows ? `<table><thead><tr><th>Staff</th><th>Role</th><th>Shift</th><th>Notes</th></tr></thead><tbody>${assignRows}</tbody></table>` : `<div class="empty-state" style="padding:30px 20px;"><i class="bi bi-person-badge" style="font-size:32px;color:var(--gray-300);"></i><h4>No staff assigned</h4><p>Assign staff members to this booking from the Staff & Assignments page, or use the button above.</p></div>`}`;
+      ${staffHtml || `<div class="empty-state" style="padding:30px 20px;"><i class="bi bi-person-badge" style="font-size:32px;color:var(--gray-300);"></i><h4>No staff assigned</h4><p>Assign staff members to this booking from the Staff & Assignments page, or use the button above.</p></div>`}`;
   } else if(state.tab==='deliveries'){
     const bkDeliveries = (state.rows['deliveries']||[]).filter(r => r.booking_id === b.id);
     const delRows = bkDeliveries.map(r => {
@@ -1786,14 +1823,18 @@ ${staffChips ? `<div style="margin-bottom:14px;"><div class="section-title" styl
         actions += `<button class="btn btn-secondary btn-sm" onclick="advanceDelivery('${r.id}')"><i class="bi bi-arrow-right-circle"></i>Advance</button>`;
       if(r.status!=='delivered' && r.status!=='cancelled' && hasPerm('delivery:cancel'))
         actions += ` <button class="btn btn-delete btn-sm" onclick="cancelDelivery('${r.id}')"><i class="bi bi-x-circle"></i>Cancel</button>`;
-      return `<tr><td class="muted">${scheduled}</td><td>${badge(dlBadge,status)}</td><td class="muted">${addr}</td><td class="muted">${contact}</td><td>${actions}</td></tr>`;
-    }).join('');
+      const delCard = `<div class="mobile-table-card"><div class="mtc-row"><span class="mtc-label">Scheduled</span><span style="font-size:12px;">${scheduled}</span></div><div class="mtc-row"><span class="mtc-label">Status</span>${badge(dlBadge,status)}</div><div class="mtc-row"><span class="mtc-label">Address</span><span style="font-size:12px;">${addr}</span></div><div class="mtc-row"><span class="mtc-label">Contact</span><span style="font-size:12px;">${contact}</span></div>${actions?`<div class="mtc-actions">${actions}</div>`:''}</div>`;
+      return {tbl:`<tr><td class="muted">${scheduled}</td><td>${badge(dlBadge,status)}</td><td class="muted">${addr}</td><td class="muted">${contact}</td><td>${actions}</td></tr>`, card:delCard};
+    });
+    const delTableRows = delResults.map(x=>x.tbl).join('');
+    const delCardRows = delResults.map(x=>x.card).join('');
+    const isDelMob = state.viewport === 'mobile';
     body = `
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div class="section-title" style="font-size:13px;margin:0;">Deliveries for this booking</div>
         ${hasPerm('delivery:create') ? `<button class="btn btn-secondary btn-sm" onclick="openModule('deliveries','create',null,{booking_id:'${b.id}'})"><i class="bi bi-plus-lg"></i>Schedule delivery</button>` : ''}
       </div>
-      ${delRows ? `<table><thead><tr><th>Scheduled</th><th>Status</th><th>Address</th><th>Contact</th><th>Actions</th></tr></thead><tbody>${delRows}</tbody></table>` : `<div class="empty-state" style="padding:30px 20px;"><i class="bi bi-box-seam" style="font-size:32px;color:var(--gray-300);"></i><h4>No deliveries scheduled</h4><p>Schedule a delivery for this booking to track dispatch and arrival.</p></div>`}`;
+      ${delResults.length ? (isDelMob ? delCardRows : `<table><thead><tr><th>Scheduled</th><th>Status</th><th>Address</th><th>Contact</th><th>Actions</th></tr></thead><tbody>${delTableRows}</tbody></table>`) : `<div class="empty-state" style="padding:30px 20px;"><i class="bi bi-box-seam" style="font-size:32px;color:var(--gray-300);"></i><h4>No deliveries scheduled</h4><p>Schedule a delivery for this booking to track dispatch and arrival.</p></div>`}`;
   } else if(state.tab==='payments'){
     const ps = state.bkPayments[b.id] || [];
     const raw = b._raw || {};
