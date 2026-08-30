@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_FROM_NAME: str = "ARGO Catering"
 
+    # Brevo HTTPS email API — works on Render free tier (which blocks SMTP
+    # egress). When set, it takes priority over SMTP for all service emails.
+    BREVO_API_KEY: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

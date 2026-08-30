@@ -1,38 +1,76 @@
 """app/email_service.py
 
-Sends all service emails over Gmail SMTP (SMTP_HOST / SMTP_PORT / SMTP_USER /
-SMTP_PASSWORD with a Gmail address + App Password). Sending runs on a
-background thread; failures are logged, never raised, so a mail outage can
-never break inquiry creation, quotations, bookings, or verification.
+Sends all service emails. Primary path: Brevo HTTPS API (works on Render free
+tier, which blocks outbound SMTP). Fallback: Gmail SMTP via smtplib when
+BREVO_API_KEY is unset (e.g. local dev or a paid Render instance).
 
-Config fields: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM_NAME
+Sending runs on a background thread; failures are logged, never raised, so a
+mail outage can never break inquiry creation, quotations, bookings, or
+verification.
+
+Config fields: BREVO_API_KEY, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD,
+SMTP_FROM_NAME
 """
 
 from __future__ import annotations
+import json
 import smtplib
 import ssl
 import threading
 import logging
+import urllib.request
+import urllib.error
 from email.message import EmailMessage
 from typing import Callable
 
 logger = logging.getLogger("email_service")
 
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+
 
 class EmailService:
     def __init__(self, settings):
+        self._brevo_key = getattr(settings, "BREVO_API_KEY", "")
         self._host = settings.SMTP_HOST
         self._port = settings.SMTP_PORT
         self._username = settings.SMTP_USER
         self._password = settings.SMTP_PASSWORD
         self._from_name = settings.SMTP_FROM_NAME or "ARGO Catering"
-        if self._username:
-            self._from = f"{self._from_name} <{self._username}>"
-        else:
-            self._from = f"{self._from_name} <no-reply@local>"
+        self._from_email = self._username or "no-reply@local"
+        self._from = f"{self._from_name} <{self._from_email}>"
 
-    def _configured(self) -> bool:
+    def _brevo_configured(self) -> bool:
+        return bool(self._brevo_key)
+
+    def _smtp_configured(self) -> bool:
         return bool(self._host and self._username and self._password)
+
+    def _send_via_brevo(self, to: str, subject: str, html: str, text: str | None = None) -> None:
+        payload = {
+            "sender": {"name": self._from_name, "email": self._from_email},
+            "to": [{"email": to}],
+            "subject": subject,
+            "htmlContent": html,
+        }
+        if text:
+            payload["textContent"] = text
+        req = urllib.request.Request(
+            BREVO_API_URL,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "api-key": self._brevo_key,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                logger.info("Brevo OK (subject=%r, to=%s)", subject, to)
+        except urllib.error.HTTPError as e:
+            body = e.read().decode(errors="replace") if e.fp else ""
+            logger.error("Brevo %s: %s", e.code, body)
+            raise RuntimeError(f"Brevo {e.code}: {body}") from e
 
     def _send_via_smtp(self, to: str, subject: str, html: str, text: str | None = None) -> None:
         msg = EmailMessage()
@@ -53,11 +91,16 @@ class EmailService:
                 server.login(self._username, self._password)
                 server.send_message(msg)
 
+    def _configured(self) -> bool:
+        return self._brevo_configured() or self._smtp_configured()
+
     def _send_now(self, to: str, subject: str, html: str, text: str | None = None) -> None:
-        if not self._configured():
-            logger.warning("No SMTP credentials configured; email to %s skipped", to)
-            return
-        self._send_via_smtp(to, subject, html, text)
+        if self._brevo_configured():
+            self._send_via_brevo(to, subject, html, text)
+        elif self._smtp_configured():
+            self._send_via_smtp(to, subject, html, text)
+        else:
+            logger.warning("No email provider configured; email to %s skipped", to)
 
     def _send_background(self, to: str, subject: str, html: str, text: str | None = None) -> None:
         def _run():
