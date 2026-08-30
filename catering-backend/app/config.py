@@ -24,16 +24,13 @@ class Settings(BaseSettings):
     # CORS allowed origins - comma-separated list
     CORS_ALLOWED_ORIGINS: str = "*"
 
-    # SMTP settings for step-up email verification
+    # SMTP for all service emails (Gmail address + App Password in production).
+    # If these are left unset, emails are skipped with a log warning.
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_FROM_NAME: str = "ARGO Catering"
-
-    # Resend API (used instead of SMTP on Render free tier)
-    RESEND_API_KEY: str = ""
-    EMAIL_FROM: str = "ARGO Catering <onboarding@resend.dev>"
 
     class Config:
         env_file = ".env"
