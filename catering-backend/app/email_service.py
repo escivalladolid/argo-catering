@@ -1,10 +1,11 @@
 """app/email_service.py
 
-Sends emails via Resend HTTP API (works on Render free tier where SMTP is blocked).
-Auto-adds recipients to the Resend audience so 403 errors never happen.
-Falls back to SMTP if RESEND_API_KEY is not set.
+Sends all service emails over Gmail SMTP (SMTP_HOST / SMTP_PORT / SMTP_USER /
+SMTP_PASSWORD with a Gmail address + App Password). Sending runs on a
+background thread; failures are logged, never raised, so a mail outage can
+never break inquiry creation, quotations, bookings, or verification.
 
-Config fields: RESEND_API_KEY, EMAIL_FROM, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD
+Config fields: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM_NAME
 """
 
 from __future__ import annotations
@@ -12,88 +13,26 @@ import smtplib
 import ssl
 import threading
 import logging
-import urllib.request
-import urllib.error
-import json
 from email.message import EmailMessage
 from typing import Callable
 
 logger = logging.getLogger("email_service")
 
-RESEND_API_URL = "https://api.resend.com/emails"
-RESEND_CONTACTS_URL = "https://api.resend.com/audiences"
-
 
 class EmailService:
     def __init__(self, settings):
-        self._resend_key = getattr(settings, "RESEND_API_KEY", "")
-        self._from = getattr(settings, "EMAIL_FROM", "") or f"ARGO Catering <{settings.SMTP_USER}>"
-        self._audience_id: str | None = None
-        # SMTP fallback
         self._host = settings.SMTP_HOST
         self._port = settings.SMTP_PORT
         self._username = settings.SMTP_USER
         self._password = settings.SMTP_PASSWORD
+        self._from_name = settings.SMTP_FROM_NAME or "ARGO Catering"
+        if self._username:
+            self._from = f"{self._from_name} <{self._username}>"
+        else:
+            self._from = f"{self._from_name} <no-reply@local>"
 
-    def _resend_headers(self):
-        return {
-            "Authorization": f"Bearer {self._resend_key}",
-            "Content-Type": "application/json",
-            "User-Agent": "ARGO-Catering/1.0",
-        }
-
-    def _ensure_audience(self) -> str | None:
-        if self._audience_id:
-            return self._audience_id
-        self._audience_id = "9f344cee-c4ef-4744-82e8-309fe5659177"
-        return self._audience_id
-
-    def _ensure_contact(self, email: str) -> None:
-        audience_id = self._ensure_audience()
-        if not audience_id:
-            return
-        try:
-            payload = json.dumps({"email": email, "unsubscribed": False}).encode("utf-8")
-            url = f"{RESEND_CONTACTS_URL}/{audience_id}/contacts"
-            req = urllib.request.Request(
-                url,
-                data=payload,
-                headers=self._resend_headers(),
-                method="POST",
-            )
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                logger.info("Resend contact added: %s", email)
-        except urllib.error.HTTPError as e:
-            if e.code == 409:
-                logger.info("Resend contact already exists: %s", email)
-            else:
-                body = e.read().decode() if e.fp else ""
-                logger.warning("Resend add contact %s failed: %s %s", email, e.code, body)
-        except Exception:
-            logger.warning("Could not add Resend contact %s", email, exc_info=True)
-
-    def _send_via_resend(self, to: str, subject: str, html: str) -> None:
-        self._ensure_contact(to)
-        payload = json.dumps({
-            "from": self._from,
-            "to": [to],
-            "subject": subject,
-            "html": html,
-        }).encode("utf-8")
-
-        req = urllib.request.Request(
-            RESEND_API_URL,
-            data=payload,
-            headers=self._resend_headers(),
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                logger.info("Resend OK: %s", resp.read().decode())
-        except urllib.error.HTTPError as e:
-            body = e.read().decode() if e.fp else ""
-            logger.error("Resend %s: %s", e.code, body)
-            raise RuntimeError(f"Resend {e.code}: {body}") from e
+    def _configured(self) -> bool:
+        return bool(self._host and self._username and self._password)
 
     def _send_via_smtp(self, to: str, subject: str, html: str, text: str | None = None) -> None:
         msg = EmailMessage()
@@ -115,12 +54,10 @@ class EmailService:
                 server.send_message(msg)
 
     def _send_now(self, to: str, subject: str, html: str, text: str | None = None) -> None:
-        if self._resend_key:
-            self._send_via_resend(to, subject, html)
-        elif self._host and self._username and self._password:
-            self._send_via_smtp(to, subject, html, text)
-        else:
-            logger.warning("No email provider configured; email to %s skipped", to)
+        if not self._configured():
+            logger.warning("No SMTP credentials configured; email to %s skipped", to)
+            return
+        self._send_via_smtp(to, subject, html, text)
 
     def _send_background(self, to: str, subject: str, html: str, text: str | None = None) -> None:
         def _run():
