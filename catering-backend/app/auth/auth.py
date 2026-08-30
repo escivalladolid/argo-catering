@@ -37,6 +37,22 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
+def create_customer_access_token(customer_id: UUID, organization_id: UUID | None) -> str:
+    """Mint a customer-scoped JWT using the same secret/HS256 as internal users.
+
+    Carries an explicit ``type: customer`` claim so no endpoint can mistake it for
+    an internal-user token (``get_current_user`` rejects it outright).
+    """
+    return create_access_token(
+        {
+            "sub": str(customer_id),
+            "type": "customer",
+            "role": "customer",
+            "org": str(organization_id) if organization_id else None,
+        }
+    )
+
+
 def get_token_claims(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict[str, Any]:
@@ -67,6 +83,8 @@ def get_current_user(
     claims: dict[str, Any] = Depends(get_token_claims),
     db: Session = Depends(get_db),
 ) -> UserStub:
+    if claims.get("type") == "customer":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     try:
         user_id = UUID(str(claims["sub"]))
     except (ValueError, TypeError, AttributeError):

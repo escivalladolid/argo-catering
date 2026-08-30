@@ -3,7 +3,7 @@ from datetime import datetime, time, timezone
 from typing import Any, Generic, Literal, TypeVar
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.rbac import VALID_ROLES
 
@@ -161,6 +161,79 @@ class UserResetOut(BaseModel):
     id: UUID
     email: str
     temporary_password: str
+
+
+class CustomerRegisterIn(BaseModel):
+    name: str
+    email: str
+    phone: str | None = None
+    password: str = Field(min_length=8)
+    confirm_password: str = Field(min_length=8)
+
+    @field_validator("name")
+    @classmethod
+    def _validate_name(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Name is required")
+        return v
+
+    @field_validator("email")
+    @classmethod
+    def _validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", v):
+            raise ValueError("Invalid email format")
+        return v
+
+    @field_validator("phone")
+    @classmethod
+    def _validate_phone(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        v = v.strip()
+        return v or None
+
+    @model_validator(mode="after")
+    def _passwords_match(self):
+        if self.password != self.confirm_password:
+            raise ValueError("Passwords do not match")
+        return self
+
+
+class CustomerVerifyIn(BaseModel):
+    email: str
+    verification_code: str = Field(min_length=6, max_length=6)
+
+    @field_validator("email")
+    @classmethod
+    def _validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", v):
+            raise ValueError("Invalid email format")
+        return v
+
+    @field_validator("verification_code")
+    @classmethod
+    def _strip_code(cls, v: str) -> str:
+        v = v.strip()
+        if not v.isdigit() or len(v) != 6:
+            raise ValueError("Verification code must be a 6-digit number")
+        return v
+
+
+class CustomerRegisterOut(BaseModel):
+    detail: str = "Account created. A verification code has been emailed to you."
+
+
+class CustomerOut(BaseModel):
+    id: UUID
+    organization_id: UUID
+    name: str
+    email: str
+    phone: str | None = None
+    verified_at: datetime | None = None
+    created_at: datetime | None = None
 
 
 class OrganizationOut(BaseModel):

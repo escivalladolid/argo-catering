@@ -25,6 +25,7 @@ from app.routers import (
     audit_log,
     users,
     dashboard,
+    customer_auth,
 )
 
 from app.config import get_settings
@@ -109,6 +110,7 @@ app.include_router(public_portal.router)
 app.include_router(audit_log.router)
 app.include_router(users.router)
 app.include_router(dashboard.router)
+app.include_router(customer_auth.router)
 
 
 @app.get("/")
