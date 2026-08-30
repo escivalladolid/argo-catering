@@ -128,6 +128,31 @@ def otp_verification(code: str, reference: str | None = None, expires_minutes: i
 
 
 # ---------------------------------------------------------------------------
+# 2b. Customer account email verification
+# ---------------------------------------------------------------------------
+def customer_verification(code: str, expires_minutes: int = 10) -> dict:
+    body = f"""
+<tr><td class="em-pad" style="padding:36px 32px 8px;text-align:center;">
+  <p style="font-family:Arial,sans-serif;font-size:15px;color:#0f172a;font-weight:bold;margin:0 0 8px;">Verify your ARGO account</p>
+  <p style="font-family:Arial,sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 22px;max-width:380px;display:inline-block;">
+    Enter this code to finish creating your account and unlock your inquiry, quotation, and booking history.
+  </p>
+  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 20px;"><tr>
+    <td style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:10px;padding:16px 30px;">
+      <span class="em-code" style="font-family:Arial,sans-serif;font-size:30px;font-weight:bold;letter-spacing:.35em;color:#0f172a;">{code}</span>
+    </td>
+  </tr></table>
+  <p style="font-family:Arial,sans-serif;font-size:12px;color:#94a3b8;margin:0 0 24px;">This code expires in {expires_minutes} minutes.</p>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border-radius:8px;margin-bottom:8px;"><tr>
+    <td style="padding:12px 18px;font-family:Arial,sans-serif;font-size:11.5px;color:#92400e;text-align:left;">
+      If you didn't create this account, you can safely ignore this email — no inquiry was submitted.
+    </td>
+  </tr></table>
+</td></tr>"""
+    return {"subject": f"Your ARGO account verification code: {code}", "html": _document(body)}
+
+
+# ---------------------------------------------------------------------------
 # 3. Quotation ready
 # ---------------------------------------------------------------------------
 def quotation_ready(

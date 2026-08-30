@@ -35,6 +35,26 @@ class UserStub(Base):
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
+class Customer(Base):
+    """Self-service customer account (portal login), rooted at an organization."""
+
+    __tablename__ = "customers"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
+    phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, comment="Null until email verification succeeds")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (
+        Index("uq_customers_org_email", "organization_id", "email", unique=True, postgresql_where=text("deleted_at IS NULL"), sqlite_where=text("deleted_at IS NULL")),
+    )
+
+
 class CateringPackage(Base):
     __tablename__ = "catering_packages"
 
@@ -194,6 +214,7 @@ class CateringInquiry(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), nullable=True, index=True, comment="Denormalized customer account link; NULL for anonymous portal submissions")
     customer_name: Mapped[str] = mapped_column(String(255), nullable=False)
     customer_contact: Mapped[str] = mapped_column(String(255), nullable=False)
     customer_email: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -288,6 +309,7 @@ class CateringQuotation(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), nullable=True, index=True, comment="Denormalized; NULL for anonymous portal inquiries")
     inquiry_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("catering_inquiries.id", ondelete="CASCADE"), nullable=False, index=True)
     catering_package_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("catering_packages.id", ondelete="SET NULL"), nullable=True)
     guest_count: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -309,6 +331,7 @@ class CateringBooking(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), nullable=True, index=True, comment="Denormalized; NULL for anonymous portal inquiries")
     quotation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("catering_quotations.id", ondelete="CASCADE"), nullable=False, unique=True)
     event_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     event_location: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -597,6 +620,7 @@ class CateringPayment(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), nullable=True, index=True, comment="Denormalized; NULL for anonymous portal inquiries")
     booking_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("catering_bookings.id", ondelete="CASCADE"), nullable=False, index=True)
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     method: Mapped[str] = mapped_column(String(30), nullable=False, default="cash")

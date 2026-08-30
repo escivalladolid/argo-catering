@@ -11,7 +11,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.auth.auth import hash_password, verify_password
-from app.email_templates import otp_verification
+from app.email_templates import customer_verification, otp_verification
 from app.models.catering_models import (
     BookingRequirement,
     CateringAuditLog,
@@ -724,6 +724,121 @@ def verify_customer_billing_code(
         .filter(
             CateringVerificationCode.reference_id == reference,
             CateringVerificationCode.action == "customer_billing",
+            CateringVerificationCode.used_at.is_(None),
+            CateringVerificationCode.expires_at > now,
+        )
+        .order_by(CateringVerificationCode.created_at.desc())
+        .first()
+    )
+    if row is None:
+        return False
+    if not verify_password(submitted_code, row.code_hash):
+        return False
+    row.used_at = now
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Customer account email verification (reference-keyed, mirrors billing OTP)
+# ---------------------------------------------------------------------------
+# Customers are NOT ``users`` rows, so codes are keyed on ``reference_id`` =
+# str(customer_id) with action='customer_verify' — the same table/mechanism
+# used by the billing OTP flow, never a second verification table.
+CUSTOMER_VERIFY_TTL_MINUTES = 10
+CUSTOMER_VERIFY_RATE_LIMIT_SECONDS = 30
+
+
+def request_customer_verification_code(
+    db,
+    customer_id: UUID,
+    customer_email: str,
+    *,
+    organization_id: UUID | None = None,
+) -> CateringVerificationCode:
+    """Generate a 6-digit email-verification code for a customer account.
+
+    Rate-limits to one request per 30s per customer and invalidates any prior
+    unused code before issuing a new one. Email failures are logged but never
+    crash the request — the code row is still stored.
+    """
+    now = datetime.now(timezone.utc)
+    reference = str(customer_id)
+    latest = (
+        db.query(CateringVerificationCode)
+        .filter(
+            CateringVerificationCode.reference_id == reference,
+            CateringVerificationCode.action == "customer_verify",
+        )
+        .order_by(CateringVerificationCode.created_at.desc())
+        .first()
+    )
+    if latest is not None:
+        created = latest.created_at
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        age = (now - created).total_seconds()
+        if age < CUSTOMER_VERIFY_RATE_LIMIT_SECONDS:
+            wait = int(CUSTOMER_VERIFY_RATE_LIMIT_SECONDS - age) + 1
+            raise HTTPException(
+                status_code=429,
+                detail=f"A verification code was already sent. Try again in {wait}s.",
+            )
+
+    db.query(CateringVerificationCode).filter(
+        CateringVerificationCode.reference_id == reference,
+        CateringVerificationCode.action == "customer_verify",
+        CateringVerificationCode.used_at.is_(None),
+    ).update({"used_at": now})
+
+    code = f"{secrets.randbelow(1_000_000):06d}"
+    row = CateringVerificationCode(
+        reference_id=reference,
+        action="customer_verify",
+        code_hash=hash_password(code),
+        expires_at=now + timedelta(minutes=CUSTOMER_VERIFY_TTL_MINUTES),
+        used_at=None,
+        created_at=now,
+    )
+    db.add(row)
+
+    if organization_id is not None:
+        log_audit(
+            db,
+            organization_id=organization_id,
+            entity_type="customer",
+            entity_id=customer_id,
+            entity_reference=customer_email,
+            action="verification_requested",
+            current_user=None,
+            summary="Customer email verification code requested",
+        )
+
+    from app.email_service import email_service
+    email_service.send_template(
+        customer_email,
+        customer_verification,
+        code=code,
+        expires_minutes=CUSTOMER_VERIFY_TTL_MINUTES,
+    )
+
+    return row
+
+
+def verify_customer_verification_code(
+    db,
+    customer_id: UUID,
+    submitted_code: str,
+) -> bool:
+    """Validate the latest unused, unexpired verification code for a customer.
+
+    On a match the code is marked used. Returns True/False.
+    """
+    now = datetime.now(timezone.utc)
+    row = (
+        db.query(CateringVerificationCode)
+        .filter(
+            CateringVerificationCode.reference_id == str(customer_id),
+            CateringVerificationCode.action == "customer_verify",
             CateringVerificationCode.used_at.is_(None),
             CateringVerificationCode.expires_at > now,
         )
