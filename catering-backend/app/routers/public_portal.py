@@ -35,6 +35,7 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database import get_db
+from app.dependencies import get_optional_customer
 from app.flow import decode_food_requirements, encode_food_requirements, generate_inquiry_short_reference, inquiry_reference, log_audit, payment_summary, request_customer_billing_code, verify_customer_billing_code, create_billing_access_token, decode_billing_access_token, compute_inquiry_total, _price_catalog_ids, suggested_price, compute_premade_total
 from app.models.catering_models import (
     CateringBooking,
@@ -49,6 +50,7 @@ from app.models.catering_models import (
     CateringStaffMember,
     CateringVerificationCode,
     CateringVenue,
+    Customer,
     OrganizationStub,
     PackageDerivedRatio,
     VenueBooking,
@@ -761,8 +763,14 @@ def create_public_inquiry(
     payload: CustomerInquirySubmit,
     db: Session = Depends(get_db),
     org_id: UUID = Depends(get_public_org_id),
+    customer: Customer | None = Depends(get_optional_customer),
 ):
-    """Public inquiry submission — validated, then persisted like the internal one."""
+    """Public inquiry submission — validated, then persisted like the internal one.
+
+    When the caller supplies a valid customer JWT it is recorded on the inquiry
+    (``customer_id``) so the submission shows up in the customer's account
+    history; anonymous submissions remain anonymous.
+    """
     pkg = _require_active_package(db, org_id, payload.catering_package_id)
     if pkg and payload.package_mode is None:
         payload.package_mode = "default"
@@ -851,6 +859,7 @@ def create_public_inquiry(
     access_token = secrets.token_urlsafe(32)
     inquiry = CateringInquiry(
         organization_id=org_id,
+        customer_id=customer.id if customer else None,
         customer_name=payload.customer_name,
         customer_contact=payload.customer_contact,
         customer_email=payload.customer_email,
@@ -1029,19 +1038,15 @@ def resend_status_link(
     return {"message": GENERIC_RESEND_MESSAGE}
 
 
-@router.get("/inquiries/{reference}", response_model=CustomerStatusOut)
-def public_inquiry_status(
-    reference: str,
-    token: str = Query(...),
-    db: Session = Depends(get_db),
-    org_id: UUID = Depends(get_public_org_id),
-):
-    inquiry = _get_inquiry(db, org_id, reference)
-    if not secrets.compare_digest(inquiry.access_token, token):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid or missing access token.",
-        )
+def build_customer_status(
+    db: Session, org_id: UUID, inquiry: CateringInquiry
+) -> CustomerStatusOut:
+    """Assemble the customer-facing status view for one inquiry.
+
+    Shared by the anonymous tracking endpoint (token-gated) and the
+    authenticated customer account endpoint — both render the exact same
+    payload so the portal shows one truth.
+    """
     quotation = _visible_quotation(db, org_id, inquiry.id)
     booking = _booking_for(db, org_id, quotation)
     inquiry_pkg_name, _ = _package_snapshot(db, org_id, inquiry.catering_package_id)
@@ -1158,6 +1163,22 @@ def public_inquiry_status(
             else None
         ),
     )
+
+
+@router.get("/inquiries/{reference}", response_model=CustomerStatusOut)
+def public_inquiry_status(
+    reference: str,
+    token: str = Query(...),
+    db: Session = Depends(get_db),
+    org_id: UUID = Depends(get_public_org_id),
+):
+    inquiry = _get_inquiry(db, org_id, reference)
+    if not secrets.compare_digest(inquiry.access_token, token):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid or missing access token.",
+        )
+    return build_customer_status(db, org_id, inquiry)
 
 
 @router.post(

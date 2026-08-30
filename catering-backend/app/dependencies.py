@@ -2,11 +2,14 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.auth.auth import get_current_user, get_token_claims
 from app.database import get_db
 from app.models.catering_models import Customer, UserStub
+
+_optional_bearer = HTTPBearer(auto_error=False)
 
 
 def get_org_id(
@@ -81,3 +84,43 @@ def get_current_customer(
     customer.organization_id = org_id
     customer._jwt_claims = claims
     return customer
+
+
+def get_optional_customer(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_optional_bearer),
+    db: Session = Depends(get_db),
+) -> Customer | None:
+    """Resolve a customer from the JWT when a valid customer token is present.
+
+    Used to bind new anonymous portal submissions to a logged-in customer.
+    Deliberately lenient: missing, invalid, or non-customer tokens resolve to
+    None so the anonymous portal flow is never broken by a stale header.
+    """
+    if credentials is None:
+        return None
+    try:
+        claims = get_token_claims(credentials)
+    except HTTPException:
+        return None
+    if claims.get("type") != "customer":
+        return None
+    try:
+        customer_id = UUID(str(claims["sub"]))
+    except (ValueError, TypeError, AttributeError):
+        return None
+    raw_org = claims.get("org")
+    if raw_org is None:
+        return None
+    try:
+        org_id = raw_org if isinstance(raw_org, UUID) else UUID(str(raw_org))
+    except (ValueError, TypeError, AttributeError):
+        return None
+    return (
+        db.query(Customer)
+        .filter(
+            Customer.id == customer_id,
+            Customer.organization_id == org_id,
+            Customer.deleted_at.is_(None),
+        )
+        .first()
+    )

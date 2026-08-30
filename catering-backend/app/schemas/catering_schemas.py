@@ -2039,6 +2039,67 @@ class CustomerStatusOut(BaseModel):
 
 
 # =========================================================================
+# Customer account portal — inquiry linking & history (Phase 0.6).
+# =========================================================================
+
+class CustomerInquiryLinkIn(BaseModel):
+    reference: str = Field(min_length=1)
+    access_token: str = Field(min_length=1)
+
+
+class CustomerInquiryLinkOut(BaseModel):
+    message: str
+    reference: str
+
+
+class CustomerInquiryListItemOut(BaseModel):
+    reference: str
+    event_date: datetime
+    event_type: str | None = None
+    event_address: str | None = None
+    venue_name: str | None = None
+    guest_count: int
+    package_name: str | None = None
+    status: str
+    review_status: str = "auto_approved"
+    estimated_total: float | None = None
+    quotation_status: str | None = None
+    booking_status: str | None = None
+    payment_status: str | None = None
+    amount_paid: float = 0
+    created_at: datetime
+
+
+class CustomerBookingListItemOut(BaseModel):
+    reference: str
+    inquiry_reference: str
+    event_date: datetime
+    event_location: str | None = None
+    event_time: time | None = None
+    guest_count: int
+    total_amount: float
+    payment_status: str = "unpaid"
+    status: str
+    service_style: str | None = None
+    coordinator_name: str | None = None
+    coordinator_contact: str | None = None
+    created_at: datetime
+
+
+class CustomerPaymentListItemOut(BaseModel):
+    id: UUID
+    amount: float
+    method: str
+    customer_reference: str | None = None
+    payment_date: datetime | None = None
+    verified: bool = False
+    proof_url: str | None = None
+    created_at: datetime
+    inquiry_reference: str | None = None
+    booking_reference: str | None = None
+
+
+# =========================================================================
 # Public venue catalog.
 # =========================================================================
 
